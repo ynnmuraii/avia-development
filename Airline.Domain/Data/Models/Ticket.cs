@@ -1,5 +1,8 @@
 ﻿namespace Airline.Domain;
 
+/// <summary>
+/// Класс, представляющий билет на рейс с информацией о пассажире, месте и багаже.
+/// </summary>
 public class Ticket
 {
     public Guid Id { get; init; } = Guid.NewGuid();

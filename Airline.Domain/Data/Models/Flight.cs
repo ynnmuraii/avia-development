@@ -1,5 +1,8 @@
 ﻿namespace Airline.Domain;
 
+/// <summary>
+/// Класс, представляющий рейс с информацией о маршруте, времени отправления/прибытия и используемой модели самолета.
+/// </summary>
 public class Flight
 {
     public required string Code { get; set; }

@@ -1,5 +1,8 @@
 ﻿namespace Airline.Domain;
 
+/// <summary>
+/// Класс, представляющий пассажира с персональными данными и паспортной информацией.
+/// </summary>
 public class Passenger
 {
     public required string FirstName {  get; set; }
