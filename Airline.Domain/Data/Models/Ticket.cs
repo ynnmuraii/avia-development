@@ -2,6 +2,7 @@
 
 public class Ticket
 {
+    public Guid Id { get; init; } = Guid.NewGuid();
     public required Flight Flight { get; set; }
     public required Passenger Passenger { get; set; }
     public required string SeatId { get; set; }

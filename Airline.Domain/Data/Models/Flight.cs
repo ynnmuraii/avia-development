@@ -2,11 +2,11 @@
 
 public class Flight
 {
-    public required string FlightCode {  get; set; }
-    public required string PointOfDeparture { get; set; }
-    public required string PointOfArrival { get; set; }
+    public required string Code { get; set; }
+    public required string From { get; set; }
+    public required string To { get; set; }
     public required DateOnly DateOfDeparture { get; set; }
-    public required DateOnly DateofArrival { get; set; }
+    public required DateOnly DateOfArrival { get; set; }
     public required TimeOnly TimeOfDeparture { get; set; }
     public required TimeSpan FlightDuration { get; set; }
     public required AircraftModel Model { get; set; }
