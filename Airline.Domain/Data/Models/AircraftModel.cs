@@ -5,8 +5,33 @@
 /// </summary>
 public class AircraftModel
 {
-    public required string ModelName { get; set;  }
-    public required int RangeKm { get; set; }
-    public required int Seats { get; set; }
+    /// <summary>
+    /// Уникальный идентификатор модели.
+    /// </summary>
+    public required int Id { get; set; }
+
+    /// <summary>
+    /// Название модели самолёта
+    /// </summary>
+    public required string ModelName { get; set; }
+
+    /// <summary>
+    /// Максимальная дальность полёта (в км).
+    /// </summary>
+    public int RangeKm { get; set; }
+
+    /// <summary>
+    /// Количество пассажирских мест.
+    /// </summary>
+    public int Seats { get; set; }
+
+    /// <summary>
+    /// Грузовместимость (в кг).
+    /// </summary>
+    public int CargoCapacityKg { get; set; }
+
+    /// <summary>
+    /// Семейство модели.
+    /// </summary>
     public required AircraftFamily Family { get; set; }
 }

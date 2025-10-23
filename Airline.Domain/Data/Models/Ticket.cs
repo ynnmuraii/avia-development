@@ -5,10 +5,33 @@
 /// </summary>
 public class Ticket
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
+    /// <summary>
+    /// Уникальный идентификатор билета.
+    /// </summary>
+    public required int Id { get; set; }
+
+    /// <summary>
+    /// Рейс, на который оформлен билет.
+    /// </summary>
     public required Flight Flight { get; set; }
+
+    /// <summary>
+    /// Пассажир, на которого оформлен билет
+    /// </summary>
     public required Passenger Passenger { get; set; }
+
+    /// <summary>
+    /// Номер посадочного места.
+    /// </summary>
     public required string SeatId { get; set; }
-    public required bool HasCarryOn { get; set; }
-    public required int BaggageKg { get; set; }
+
+    /// <summary>
+    /// Наличие ручной клади.
+    /// </summary>
+    public bool? HasCarryOn { get; set; }
+
+    /// <summary>
+    /// Вес багажа (в кг).
+    /// </summary>
+    public float BaggageKg { get; set; }
 }
