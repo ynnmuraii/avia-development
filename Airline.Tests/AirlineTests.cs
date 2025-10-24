@@ -8,8 +8,6 @@ namespace Airline.Tests;
 /// </summary>
 public class AirlineQueriesTests(AirlineData data) : IClassFixture<AirlineData>
 {
-    private readonly AirlineData _data = data;
-
     /// <summary>
     /// Проверяет, что рейсы с минимальной длительностью корректно определяются.
     /// </summary>
@@ -17,7 +15,7 @@ public class AirlineQueriesTests(AirlineData data) : IClassFixture<AirlineData>
     public void GetFlightsWithMinimalDuration_ReturnsExpectedFlights()
     {
         var minDuration = data.Flights.Min(f => f.FlightDuration);
-        var shortestFlights = _data.Flights
+        var shortestFlights = data.Flights
             .Where(f => f.FlightDuration == minDuration)
             .ToList();
 
