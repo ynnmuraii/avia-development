@@ -8,7 +8,7 @@ public class AircraftFamily
     /// <summary>
     /// Уникальный идентификатор семейства.
     /// </summary>
-    public int Id { get; set; }
+    public required int Id { get; set; }
 
     /// <summary>
     /// Производитель самолётов семейства

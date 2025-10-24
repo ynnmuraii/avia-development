@@ -33,5 +33,5 @@ public class Ticket
     /// <summary>
     /// Вес багажа (в кг).
     /// </summary>
-    public float BaggageKg { get; set; }
+    public double BaggageKg { get; set; }
 }

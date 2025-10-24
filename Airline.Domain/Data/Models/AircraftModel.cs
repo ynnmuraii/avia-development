@@ -18,7 +18,7 @@ public class AircraftModel
     /// <summary>
     /// Максимальная дальность полёта (в км).
     /// </summary>
-    public int RangeKm { get; set; }
+    public double RangeKm { get; set; }
 
     /// <summary>
     /// Количество пассажирских мест.
@@ -28,7 +28,7 @@ public class AircraftModel
     /// <summary>
     /// Грузовместимость (в кг).
     /// </summary>
-    public int CargoCapacityKg { get; set; }
+    public double CargoCapacityKg { get; set; }
 
     /// <summary>
     /// Семейство модели.

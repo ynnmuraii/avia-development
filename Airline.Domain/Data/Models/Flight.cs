@@ -50,6 +50,3 @@ public class Flight
     /// </summary>
     public required AircraftModel Model { get; set; }
 }
-
-
-
