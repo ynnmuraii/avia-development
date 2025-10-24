@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airline.Domain", "Airline.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airline.Tests", "Airline.Tests\Airline.Tests.csproj", "{94444F2F-4D77-4C56-A9B7-7F66750EB0AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airline.API", "Airline.API\Airline.API.csproj", "{6FF87610-004E-4B5F-8AE5-86E438DB6DF9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{94444F2F-4D77-4C56-A9B7-7F66750EB0AC}.Release|x64.Build.0 = Release|Any CPU
 		{94444F2F-4D77-4C56-A9B7-7F66750EB0AC}.Release|x86.ActiveCfg = Release|Any CPU
 		{94444F2F-4D77-4C56-A9B7-7F66750EB0AC}.Release|x86.Build.0 = Release|Any CPU
+		{6FF87610-004E-4B5F-8AE5-86E438DB6DF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FF87610-004E-4B5F-8AE5-86E438DB6DF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FF87610-004E-4B5F-8AE5-86E438DB6DF9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6FF87610-004E-4B5F-8AE5-86E438DB6DF9}.Debug|x64.Build.0 = Debug|Any CPU
+		{6FF87610-004E-4B5F-8AE5-86E438DB6DF9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6FF87610-004E-4B5F-8AE5-86E438DB6DF9}.Debug|x86.Build.0 = Debug|Any CPU
+		{6FF87610-004E-4B5F-8AE5-86E438DB6DF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FF87610-004E-4B5F-8AE5-86E438DB6DF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FF87610-004E-4B5F-8AE5-86E438DB6DF9}.Release|x64.ActiveCfg = Release|Any CPU
+		{6FF87610-004E-4B5F-8AE5-86E438DB6DF9}.Release|x64.Build.0 = Release|Any CPU
+		{6FF87610-004E-4B5F-8AE5-86E438DB6DF9}.Release|x86.ActiveCfg = Release|Any CPU
+		{6FF87610-004E-4B5F-8AE5-86E438DB6DF9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
