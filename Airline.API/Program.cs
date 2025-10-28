@@ -1,10 +1,15 @@
+using AutoMapper;
 using Airline.Domain;
+using Airline.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<AirlineData>();
 
+builder.Services.AddAutoMapper(typeof(AirlineProfile));
+
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
