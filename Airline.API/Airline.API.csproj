@@ -15,4 +15,8 @@
 	  <ProjectReference Include="..\Airline.Application\Airline.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Airline.Infrastructure.InMemory\Airline.Infrastructure.InMemory.csproj" />
+  </ItemGroup>
+
 </Project>

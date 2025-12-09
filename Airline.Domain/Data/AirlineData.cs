@@ -1,4 +1,4 @@
-﻿namespace Airline.Domain;
+﻿namespace Airline.Domain.Data;
 
 /// <summary>
 /// Класс для хранения данных авиакомпании, включающий информацию о самолетах, рейсах, пассажирах и билетах.
