@@ -20,10 +20,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="AutoMapper" Version="15.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Airline.Domain\Airline.Domain.csproj" />
+    <ProjectReference Include="..\Airline.Application.Contracts\Airline.Application.Contracts.csproj" />
+    <ProjectReference Include="..\Airline.Application\Airline.Application.csproj" />
+    <ProjectReference Include="..\Airline.Infrastructure.InMemory\Airline.Infrastructure.InMemory.csproj" />
   </ItemGroup>
 
 </Project>

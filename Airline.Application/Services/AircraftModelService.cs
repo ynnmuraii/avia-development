@@ -9,7 +9,7 @@ namespace Airline.Application.Services;
 /// <summary>
 /// Сервис для управления моделями самолётов.
 /// </summary>
-public class AircraftModelService
+public class AircraftModelService : IAircraftModelService
 {
     private readonly IRepository<AircraftModel> _modelRepository;
     private readonly IRepository<AircraftFamily> _familyRepository;
@@ -49,11 +49,11 @@ public class AircraftModelService
     /// <summary>
     /// Создать новую модель.
     /// </summary>
-    public async Task<AircraftModelDto?> CreateAsync(AircraftModelCreateUpdateDto createDto)
+    public async Task<AircraftModelDto> CreateAsync(AircraftModelCreateUpdateDto createDto)
     {
         var family = await _familyRepository.ReadByIdAsync(createDto.FamilyId);
         if (family is null)
-            return null;
+            throw new InvalidOperationException($"Aircraft family with id {createDto.FamilyId} not found");
 
         var model = new AircraftModel
         {
@@ -76,7 +76,7 @@ public class AircraftModelService
     {
         var family = await _familyRepository.ReadByIdAsync(updateDto.FamilyId);
         if (family is null)
-            return null;
+            throw new InvalidOperationException($"Aircraft family with id {updateDto.FamilyId} not found");
 
         var model = new AircraftModel
         {

@@ -9,7 +9,7 @@ namespace Airline.Application.Services;
 /// <summary>
 /// Сервис для управления семействами самолётов.
 /// </summary>
-public class AircraftFamilyService
+public class AircraftFamilyService : IAircraftFamilyService
 {
     private readonly IRepository<AircraftFamily> _repository;
     private readonly IMapper _mapper;
@@ -47,6 +47,7 @@ public class AircraftFamilyService
     public async Task<AircraftFamilyDto> CreateAsync(AircraftFamilyCreateUpdateDto createDto)
     {
         var family = _mapper.Map<AircraftFamily>(createDto);
+        family.Id = 0;
         var created = await _repository.CreateAsync(family);
         return _mapper.Map<AircraftFamilyDto>(created);
     }
@@ -57,6 +58,7 @@ public class AircraftFamilyService
     public async Task<AircraftFamilyDto?> UpdateAsync(int id, AircraftFamilyCreateUpdateDto updateDto)
     {
         var family = _mapper.Map<AircraftFamily>(updateDto);
+        family.Id = 0;
         var updated = await _repository.UpdateAsync(id, family);
         return updated is not null ? _mapper.Map<AircraftFamilyDto>(updated) : null;
     }

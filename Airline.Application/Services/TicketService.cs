@@ -9,7 +9,7 @@ namespace Airline.Application.Services;
 /// <summary>
 /// Сервис для управления билетами.
 /// </summary>
-public class TicketService
+public class TicketService : ITicketService
 {
     private readonly IRepository<Ticket> _ticketRepository;
     private readonly IRepository<Flight> _flightRepository;
@@ -52,13 +52,15 @@ public class TicketService
     /// <summary>
     /// Создать новый билет.
     /// </summary>
-    public async Task<TicketDto?> CreateAsync(TicketCreateUpdateDto createDto)
+    public async Task<TicketDto> CreateAsync(TicketCreateUpdateDto createDto)
     {
         var flight = await _flightRepository.ReadByIdAsync(createDto.FlightId);
         var passenger = await _passengerRepository.ReadByIdAsync(createDto.PassengerId);
 
-        if (flight is null || passenger is null)
-            return null;
+        if (flight is null)
+            throw new InvalidOperationException($"Flight with id {createDto.FlightId} not found");
+        if (passenger is null)
+            throw new InvalidOperationException($"Passenger with id {createDto.PassengerId} not found");
 
         var ticket = new Ticket
         {
@@ -82,8 +84,10 @@ public class TicketService
         var flight = await _flightRepository.ReadByIdAsync(updateDto.FlightId);
         var passenger = await _passengerRepository.ReadByIdAsync(updateDto.PassengerId);
 
-        if (flight is null || passenger is null)
-            return null;
+        if (flight is null)
+            throw new InvalidOperationException($"Flight with id {updateDto.FlightId} not found");
+        if (passenger is null)
+            throw new InvalidOperationException($"Passenger with id {updateDto.PassengerId} not found");
 
         var ticket = new Ticket
         {

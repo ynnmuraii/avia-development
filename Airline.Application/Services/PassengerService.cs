@@ -9,7 +9,7 @@ namespace Airline.Application.Services;
 /// <summary>
 /// Сервис для управления пассажирами.
 /// </summary>
-public class PassengerService
+public class PassengerService : IPassengerService
 {
     private readonly IRepository<Passenger> _repository;
     private readonly IMapper _mapper;
@@ -47,6 +47,7 @@ public class PassengerService
     public async Task<PassengerDto> CreateAsync(PassengerCreateUpdateDto createDto)
     {
         var passenger = _mapper.Map<Passenger>(createDto);
+        passenger.Id = 0;
         var created = await _repository.CreateAsync(passenger);
         return _mapper.Map<PassengerDto>(created);
     }
@@ -57,6 +58,7 @@ public class PassengerService
     public async Task<PassengerDto?> UpdateAsync(int id, PassengerCreateUpdateDto updateDto)
     {
         var passenger = _mapper.Map<Passenger>(updateDto);
+        passenger.Id = 0;
         var updated = await _repository.UpdateAsync(id, passenger);
         return updated is not null ? _mapper.Map<PassengerDto>(updated) : null;
     }

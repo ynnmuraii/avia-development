@@ -12,23 +12,23 @@ namespace Airline.Application.Services;
 public class FlightService : IFlightService
 {
     private readonly IRepository<Flight> _repository;
+    private readonly IRepository<AircraftModel> _modelRepository;
     private readonly IMapper _mapper;
 
     /// <summary>
     /// Инициализирует сервис рейсов.
     /// </summary>
-    /// <param name="repository">Репозиторий рейсов.</param>
-    /// <param name="mapper">AutoMapper для преобразования сущностей в DTOs.</param>
-    public FlightService(IRepository<Flight> repository, IMapper mapper)
+    public FlightService(IRepository<Flight> repository, IRepository<AircraftModel> modelRepository, IMapper mapper)
     {
         _repository = repository;
+        _modelRepository = modelRepository;
         _mapper = mapper;
     }
 
     /// <summary>
     /// Получить все рейсы.
     /// </summary>
-    public async Task<IEnumerable<FlightDto>> GetAllFlightsAsync()
+    public async Task<IEnumerable<FlightDto>> GetAllAsync()
     {
         var flights = await _repository.ReadAsync();
         return _mapper.Map<IEnumerable<FlightDto>>(flights);
@@ -37,7 +37,7 @@ public class FlightService : IFlightService
     /// <summary>
     /// Получить рейс по идентификатору.
     /// </summary>
-    public async Task<FlightDto?> GetFlightByIdAsync(int id)
+    public async Task<FlightDto?> GetByIdAsync(int id)
     {
         var flight = await _repository.ReadByIdAsync(id);
         return flight is not null ? _mapper.Map<FlightDto>(flight) : null;
@@ -46,9 +46,25 @@ public class FlightService : IFlightService
     /// <summary>
     /// Создать новый рейс.
     /// </summary>
-    public async Task<FlightDto> CreateFlightAsync(FlightCreateUpdateDto createDto)
+    public async Task<FlightDto> CreateAsync(FlightCreateUpdateDto createDto)
     {
-        var flight = _mapper.Map<Flight>(createDto);
+        var model = await _modelRepository.ReadByIdAsync(createDto.ModelId);
+        if (model is null)
+            throw new InvalidOperationException($"Aircraft model with id {createDto.ModelId} not found");
+
+        var flight = new Flight
+        {
+            Id = 0,
+            Code = createDto.Code,
+            From = createDto.From,
+            To = createDto.To,
+            DateOfDeparture = createDto.DateOfDeparture,
+            DateOfArrival = createDto.DateOfArrival,
+            TimeOfDeparture = createDto.TimeOfDeparture,
+            FlightDuration = createDto.FlightDuration,
+            Model = model
+        };
+
         var created = await _repository.CreateAsync(flight);
         return _mapper.Map<FlightDto>(created);
     }
@@ -56,9 +72,25 @@ public class FlightService : IFlightService
     /// <summary>
     /// Обновить существующий рейс.
     /// </summary>
-    public async Task<FlightDto?> UpdateFlightAsync(int id, FlightCreateUpdateDto updateDto)
+    public async Task<FlightDto?> UpdateAsync(int id, FlightCreateUpdateDto updateDto)
     {
-        var flight = _mapper.Map<Flight>(updateDto);
+        var model = await _modelRepository.ReadByIdAsync(updateDto.ModelId);
+        if (model is null)
+            throw new InvalidOperationException($"Aircraft model with id {updateDto.ModelId} not found");
+
+        var flight = new Flight
+        {
+            Id = 0,
+            Code = updateDto.Code,
+            From = updateDto.From,
+            To = updateDto.To,
+            DateOfDeparture = updateDto.DateOfDeparture,
+            DateOfArrival = updateDto.DateOfArrival,
+            TimeOfDeparture = updateDto.TimeOfDeparture,
+            FlightDuration = updateDto.FlightDuration,
+            Model = model
+        };
+
         var updated = await _repository.UpdateAsync(id, flight);
         return updated is not null ? _mapper.Map<FlightDto>(updated) : null;
     }
@@ -66,7 +98,7 @@ public class FlightService : IFlightService
     /// <summary>
     /// Удалить рейс.
     /// </summary>
-    public async Task<bool> DeleteFlightAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         return await _repository.DeleteAsync(id);
     }

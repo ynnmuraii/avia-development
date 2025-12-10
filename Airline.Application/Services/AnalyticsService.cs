@@ -1,3 +1,5 @@
+using Airline.Application.Contracts.Analytics;
+using Airline.Application.Contracts.Passengers;
 using Airline.Application.Contracts.Services;
 using Airline.Domain;
 using Airline.Domain.Repositories;
@@ -15,8 +17,6 @@ public class AnalyticsService : IAnalyticsService
     /// <summary>
     /// Инициализирует сервис аналитики.
     /// </summary>
-    /// <param name="flightRepository">Репозиторий рейсов.</param>
-    /// <param name="ticketRepository">Репозиторий билетов.</param>
     public AnalyticsService(IRepository<Flight> flightRepository, IRepository<Ticket> ticketRepository)
     {
         _flightRepository = flightRepository;
@@ -26,13 +26,23 @@ public class AnalyticsService : IAnalyticsService
     /// <summary>
     /// Получить рейсы с минимальной длительностью.
     /// </summary>
-    public async Task<IEnumerable<dynamic>> GetFlightsWithMinimalDurationAsync()
+    public async Task<IEnumerable<FlightWithMinimalDurationDto>> GetFlightsWithMinimalDurationAsync()
     {
         var flights = await _flightRepository.ReadAsync();
-        var minDuration = flights.Min(f => f.FlightDuration);
+        if (!flights.Any())
+            return Enumerable.Empty<FlightWithMinimalDurationDto>();
+
+        var minDuration = flights.Where(f => f.FlightDuration.HasValue).Min(f => f.FlightDuration?.TotalMinutes ?? int.MaxValue);
         var shortestFlights = flights
-            .Where(f => f.FlightDuration == minDuration)
-            .Select(f => new { f.Id, f.Code, f.From, f.To, f.FlightDuration })
+            .Where(f => f.FlightDuration.HasValue && f.FlightDuration.Value.TotalMinutes == minDuration)
+            .Select(f => new FlightWithMinimalDurationDto
+            {
+                Id = f.Id,
+                Code = f.Code,
+                From = f.From,
+                To = f.To,
+                FlightDuration = (int)(f.FlightDuration?.TotalMinutes ?? 0)
+            })
             .ToList();
 
         return shortestFlights;
@@ -41,7 +51,7 @@ public class AnalyticsService : IAnalyticsService
     /// <summary>
     /// Получить топ-5 рейсов по количеству пассажиров.
     /// </summary>
-    public async Task<IEnumerable<dynamic>> GetTop5FlightsByPassengerCountAsync()
+    public async Task<IEnumerable<FlightWithCountDto>> GetTop5FlightsByPassengerCountAsync()
     {
         var tickets = await _ticketRepository.ReadAsync();
         var topFlights = tickets
@@ -49,7 +59,12 @@ public class AnalyticsService : IAnalyticsService
             .Select(g => new { Flight = g.Key, PassengerCount = g.Count() })
             .OrderByDescending(x => x.PassengerCount)
             .Take(5)
-            .Select(x => new { x.Flight.Id, x.Flight.Code, x.Flight.From, x.Flight.To, x.PassengerCount })
+            .Select(x => new FlightWithCountDto
+            {
+                FlightId = x.Flight.Id,
+                FlightCode = x.Flight.Code,
+                PassengerCount = x.PassengerCount
+            })
             .ToList();
 
         return topFlights;
@@ -58,21 +73,28 @@ public class AnalyticsService : IAnalyticsService
     /// <summary>
     /// Получить пассажиров без багажа для выбранного рейса.
     /// </summary>
-    public async Task<IEnumerable<dynamic>> GetPassengersWithoutBaggageAsync(string flightCode)
+    public async Task<IEnumerable<PassengerDto>> GetPassengersWithoutBaggageAsync(string flightCode)
     {
         var flights = await _flightRepository.ReadAsync();
         var tickets = await _ticketRepository.ReadAsync();
         
         var flight = flights.FirstOrDefault(f => f.Code == flightCode);
         if (flight is null)
-            return Enumerable.Empty<dynamic>();
+            return Enumerable.Empty<PassengerDto>();
 
         var passengers = tickets
             .Where(t => t.Flight == flight && t.BaggageKg == 0)
             .Select(t => t.Passenger)
             .OrderBy(p => p.LastName)
             .ThenBy(p => p.FirstName)
-            .Select(p => new { p.Id, p.FirstName, p.LastName, p.Patronymic, p.PassportNumber })
+            .Select(p => new PassengerDto(
+                p.Id,
+                p.FirstName,
+                p.LastName,
+                p.Patronymic,
+                p.PassportNumber,
+                p.BirthDate
+            ))
             .ToList();
 
         return passengers;
@@ -81,15 +103,24 @@ public class AnalyticsService : IAnalyticsService
     /// <summary>
     /// Получить рейсы выбранной модели за указанный период.
     /// </summary>
-    public async Task<IEnumerable<dynamic>> GetFlightsByModelAndDateAsync(int modelId, DateOnly startDate, DateOnly endDate)
+    public async Task<IEnumerable<FlightByModelAndDateDto>> GetFlightsByModelAndDateAsync(int modelId, DateOnly startDate, DateOnly endDate)
     {
         var flights = await _flightRepository.ReadAsync();
         
         var flightsByModel = flights
             .Where(f => f.Model.Id == modelId &&
+                        f.DateOfDeparture.HasValue &&
                         f.DateOfDeparture >= startDate &&
                         f.DateOfDeparture <= endDate)
-            .Select(f => new { f.Id, f.Code, f.From, f.To, f.DateOfDeparture, f.Model.ModelName })
+            .Select(f => new FlightByModelAndDateDto
+            {
+                Id = f.Id,
+                Code = f.Code,
+                From = f.From,
+                To = f.To,
+                DateOfDeparture = f.DateOfDeparture ?? DateOnly.FromDateTime(DateTime.Now),
+                ModelName = f.Model.ModelName
+            })
             .ToList();
 
         return flightsByModel;
@@ -98,13 +129,21 @@ public class AnalyticsService : IAnalyticsService
     /// <summary>
     /// Получить рейсы из пункта отправления в пункт прибытия.
     /// </summary>
-    public async Task<IEnumerable<dynamic>> GetFlightsByRouteAsync(string from, string to)
+    public async Task<IEnumerable<FlightByRouteDto>> GetFlightsByRouteAsync(string from, string to)
     {
         var flights = await _flightRepository.ReadAsync();
         
         var flightsByRoute = flights
             .Where(f => f.From == from && f.To == to)
-            .Select(f => new { f.Id, f.Code, f.From, f.To, f.DateOfDeparture, f.TimeOfDeparture })
+            .Select(f => new FlightByRouteDto
+            {
+                Id = f.Id,
+                Code = f.Code,
+                From = f.From,
+                To = f.To,
+                DateOfDeparture = f.DateOfDeparture ?? DateOnly.FromDateTime(DateTime.Now),
+                TimeOfDeparture = f.TimeOfDeparture ?? TimeOnly.FromDateTime(DateTime.Now)
+            })
             .ToList();
 
         return flightsByRoute;

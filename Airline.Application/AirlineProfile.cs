@@ -18,7 +18,7 @@ public class AirlineProfile : Profile
     /// </summary>
     public AirlineProfile()
     {
-        // Flight mapping
+        
         CreateMap<Flight, FlightDto>()
             .ForMember(
                 dest => dest.ModelId,
@@ -35,7 +35,7 @@ public class AirlineProfile : Profile
                 opt => opt.Ignore()
             );
 
-        // Passenger mapping
+        
         CreateMap<Passenger, PassengerDto>();
         CreateMap<PassengerCreateUpdateDto, Passenger>()
             .ForMember(
@@ -43,7 +43,7 @@ public class AirlineProfile : Profile
                 opt => opt.Ignore()
             );
 
-        // Ticket mapping
+        
         CreateMap<Ticket, TicketDto>()
             .ForMember(
                 dest => dest.FlightId,
@@ -68,7 +68,7 @@ public class AirlineProfile : Profile
                 opt => opt.Ignore()
             );
 
-        // AircraftModel mapping
+        
         CreateMap<AircraftModel, AircraftModelDto>()
             .ForMember(
                 dest => dest.FamilyId,
@@ -85,7 +85,7 @@ public class AirlineProfile : Profile
                 opt => opt.Ignore()
             );
 
-        // AircraftFamily mapping
+        
         CreateMap<AircraftFamily, AircraftFamilyDto>();
         CreateMap<AircraftFamilyCreateUpdateDto, AircraftFamily>()
             .ForMember(
