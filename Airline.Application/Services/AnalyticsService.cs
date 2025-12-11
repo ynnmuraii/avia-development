@@ -83,10 +83,11 @@ public class AnalyticsService : IAnalyticsService
             return Enumerable.Empty<PassengerDto>();
 
         var passengers = tickets
-            .Where(t => t.Flight == flight && t.BaggageKg == 0)
+            .Where(t => t.Flight.Id == flight.Id && t.BaggageKg == 0)
             .Select(t => t.Passenger)
             .OrderBy(p => p.LastName)
             .ThenBy(p => p.FirstName)
+            .Distinct()
             .Select(p => new PassengerDto(
                 p.Id,
                 p.FirstName,

@@ -48,22 +48,14 @@ public class FlightService : IFlightService
     /// </summary>
     public async Task<FlightDto> CreateAsync(FlightCreateUpdateDto createDto)
     {
+        // Проверка существования модели самолета
         var model = await _modelRepository.ReadByIdAsync(createDto.ModelId);
         if (model is null)
-            throw new InvalidOperationException($"Aircraft model with id {createDto.ModelId} not found");
+            throw new KeyNotFoundException($"Aircraft model with id {createDto.ModelId} not found");
 
-        var flight = new Flight
-        {
-            Id = 0,
-            Code = createDto.Code,
-            From = createDto.From,
-            To = createDto.To,
-            DateOfDeparture = createDto.DateOfDeparture,
-            DateOfArrival = createDto.DateOfArrival,
-            TimeOfDeparture = createDto.TimeOfDeparture,
-            FlightDuration = createDto.FlightDuration,
-            Model = model
-        };
+        // Используем AutoMapper для маппинга DTO в сущность Flight
+        var flight = _mapper.Map<Flight>(createDto);
+        flight.Model = model;
 
         var created = await _repository.CreateAsync(flight);
         return _mapper.Map<FlightDto>(created);
@@ -72,34 +64,35 @@ public class FlightService : IFlightService
     /// <summary>
     /// Обновить существующий рейс.
     /// </summary>
-    public async Task<FlightDto?> UpdateAsync(int id, FlightCreateUpdateDto updateDto)
+    public async Task UpdateAsync(int id, FlightCreateUpdateDto updateDto)
     {
+        // Получаем существующий рейс из БД
+        var existingFlight = await _repository.ReadByIdAsync(id);
+        if (existingFlight is null)
+            throw new KeyNotFoundException($"Flight with id {id} not found");
+
+        // Проверка существования модели самолета
         var model = await _modelRepository.ReadByIdAsync(updateDto.ModelId);
         if (model is null)
-            throw new InvalidOperationException($"Aircraft model with id {updateDto.ModelId} not found");
+            throw new KeyNotFoundException($"Aircraft model with id {updateDto.ModelId} not found");
 
-        var flight = new Flight
-        {
-            Id = 0,
-            Code = updateDto.Code,
-            From = updateDto.From,
-            To = updateDto.To,
-            DateOfDeparture = updateDto.DateOfDeparture,
-            DateOfArrival = updateDto.DateOfArrival,
-            TimeOfDeparture = updateDto.TimeOfDeparture,
-            FlightDuration = updateDto.FlightDuration,
-            Model = model
-        };
+        // Маппируем DTO в существующую сущность (обновляем поля)
+        _mapper.Map(updateDto, existingFlight);
+        existingFlight.Model = model;
 
-        var updated = await _repository.UpdateAsync(id, flight);
-        return updated is not null ? _mapper.Map<FlightDto>(updated) : null;
+        // Сохраняем обновленную сущность
+        await _repository.UpdateAsync(id, existingFlight);
     }
 
     /// <summary>
     /// Удалить рейс.
     /// </summary>
-    public async Task<bool> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        return await _repository.DeleteAsync(id);
+        var exists = await _repository.ReadByIdAsync(id);
+        if (exists is null)
+            throw new KeyNotFoundException($"Flight with id {id} not found");
+
+        await _repository.DeleteAsync(id);
     }
 }

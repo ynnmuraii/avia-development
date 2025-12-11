@@ -55,19 +55,18 @@ public class PassengerService : IPassengerService
     /// <summary>
     /// Обновить данные пассажира.
     /// </summary>
-    public async Task<PassengerDto?> UpdateAsync(int id, PassengerCreateUpdateDto updateDto)
+    public async Task UpdateAsync(int id, PassengerCreateUpdateDto updateDto)
     {
         var passenger = _mapper.Map<Passenger>(updateDto);
-        passenger.Id = 0;
-        var updated = await _repository.UpdateAsync(id, passenger);
-        return updated is not null ? _mapper.Map<PassengerDto>(updated) : null;
+        passenger.Id = id;
+        await _repository.UpdateAsync(id, passenger);
     }
 
     /// <summary>
     /// Удалить пассажира.
     /// </summary>
-    public async Task<bool> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        return await _repository.DeleteAsync(id);
+        await _repository.DeleteAsync(id);
     }
 }

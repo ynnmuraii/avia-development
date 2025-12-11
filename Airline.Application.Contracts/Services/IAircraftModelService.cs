@@ -5,6 +5,6 @@ namespace Airline.Application.Contracts.Services;
 /// <summary>
 /// Интерфейс для сервиса управления моделями самолётов.
 /// </summary>
-public interface IAircraftModelService : IApplicationService<AircraftModelDto, AircraftModelCreateUpdateDto, int>
+public interface IAircraftModelService : IApplicationService<AircraftModelDto, AircraftModelCreateUpdateDto>
 {
 }

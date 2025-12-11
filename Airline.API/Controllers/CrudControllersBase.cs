@@ -1,121 +1,133 @@
-using Microsoft.AspNetCore.Mvc;
 using Airline.Application.Contracts.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Airline.API.Controllers;
 
-/// <summary>
-/// Базовый класс контроллера для CRUD операций.
-/// </summary>
-[Route("api/[controller]")]
 [ApiController]
-public abstract class CrudControllerBase<TDto, TCreateUpdateDto, TKey> : ControllerBase
+[Route("api/[controller]")]
+public abstract class CrudControllerBase<TDto, TCreateUpdateDto>(
+    IApplicationService<TDto, TCreateUpdateDto> appService,
+    ILogger<CrudControllerBase<TDto, TCreateUpdateDto>> logger) : ControllerBase
     where TDto : class
     where TCreateUpdateDto : class
-    where TKey : struct
 {
-    protected readonly IApplicationService<TDto, TCreateUpdateDto, TKey> _service;
-    protected readonly ILogger<CrudControllerBase<TDto, TCreateUpdateDto, TKey>> _logger;
-
     /// <summary>
-    /// Инициализирует базовый контроллер.
-    /// </summary>
-    protected CrudControllerBase(
-        IApplicationService<TDto, TCreateUpdateDto, TKey> service,
-        ILogger<CrudControllerBase<TDto, TCreateUpdateDto, TKey>> logger)
-    {
-        _service = service;
-        _logger = logger;
-    }
-
-    /// <summary>
-    /// Получить все сущности.
+    /// Получить все записи.
     /// </summary>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public virtual async Task<ActionResult<IEnumerable<TDto>>> GetAll()
     {
-        _logger.LogInformation("Getting all entities");
-        var entities = await _service.GetAllAsync();
-        return Ok(entities);
+        logger.LogInformation("{method} method of {controller} is called", nameof(GetAll), GetType().Name);
+        try
+        {
+            var result = await appService.GetAllAsync();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Exception in {method}: {@exception}", nameof(GetAll), ex);
+            return StatusCode(500, ex.Message);
+        }
     }
 
     /// <summary>
-    /// Получить сущность по идентификатору.
+    /// Получить запись по ID.
     /// </summary>
     [HttpGet("{id}")]
-    public virtual async Task<ActionResult<TDto>> Get(TKey id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public virtual async Task<ActionResult<TDto>> Get(int id)
     {
-        _logger.LogInformation("Getting entity with id: {Id}", id);
-        var entity = await _service.GetByIdAsync(id);
-        if (entity is null)
+        logger.LogInformation("{method} method of {controller} is called with id={id}", nameof(Get), GetType().Name, id);
+        try
         {
-            _logger.LogWarning("Entity with id {Id} not found", id);
-            return NotFound();
+            var result = await appService.GetByIdAsync(id);
+            if (result == null) return NotFound($"Entity with id={id} not found");
+            return Ok(result);
         }
-
-        return Ok(entity);
+        catch (Exception ex)
+        {
+            logger.LogError("Exception in {method}: {@exception}", nameof(Get), ex);
+            return StatusCode(500, ex.Message);
+        }
     }
 
     /// <summary>
-    /// Создать новую сущностт.
+    /// Создать новую запись.
     /// </summary>
     [HttpPost]
-    public virtual async Task<ActionResult<TDto>> Create(TCreateUpdateDto createDto)
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public virtual async Task<ActionResult<TDto>> Create([FromBody] TCreateUpdateDto dto)
     {
-        _logger.LogInformation("Creating new entity");
+        logger.LogInformation("{method} method of {controller} is called", nameof(Create), GetType().Name);
         try
         {
-            var entity = await _service.CreateAsync(createDto);
-            _logger.LogInformation("Entity created successfully");
-            return CreatedAtAction(nameof(Get), entity);
+            var created = await appService.CreateAsync(dto);
+            return CreatedAtAction(nameof(Get), new { id = 0 }, created);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating entity");
-            return BadRequest(new { message = ex.Message });
+            logger.LogError("Exception in {method}: {@exception}", nameof(Create), ex);
+            return StatusCode(500, ex.Message);
         }
     }
 
     /// <summary>
-    /// Обновить существующую сущность.
+    /// Обновить существующую запись.
     /// </summary>
     [HttpPut("{id}")]
-    public virtual async Task<ActionResult<TDto>> Update(TKey id, TCreateUpdateDto updateDto)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public virtual async Task<IActionResult> Update(int id, [FromBody] TCreateUpdateDto dto)
     {
-        _logger.LogInformation("Updating entity with id: {Id}", id);
+        logger.LogInformation("{method} method of {controller} is called with id={id}", nameof(Update), GetType().Name, id);
         try
         {
-            var entity = await _service.UpdateAsync(id, updateDto);
-            if (entity is null)
-            {
-                _logger.LogWarning("Entity with id {Id} not found", id);
-                return NotFound();
-            }
-
-            _logger.LogInformation("Entity with id {Id} updated successfully", id);
-            return Ok(entity);
+            await appService.UpdateAsync(id, dto);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            logger.LogWarning("KeyNotFoundException in {method}: {message}", nameof(Update), ex.Message);
+            return NotFound(ex.Message);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating entity with id {Id}", id);
-            return BadRequest(new { message = ex.Message });
+            logger.LogError("Exception in {method}: {@exception}", nameof(Update), ex);
+            return StatusCode(500, ex.Message);
         }
     }
 
     /// <summary>
-    /// Удалить сущность.
+    /// Удалить запись.
     /// </summary>
     [HttpDelete("{id}")]
-    public virtual async Task<ActionResult> Delete(TKey id)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public virtual async Task<IActionResult> Delete(int id)
     {
-        _logger.LogInformation("Deleting entity with id: {Id}", id);
-        var result = await _service.DeleteAsync(id);
-        if (!result)
+        logger.LogInformation("{method} method of {controller} is called with id={id}", nameof(Delete), GetType().Name, id);
+        try
         {
-            _logger.LogWarning("Entity with id {Id} not found", id);
-            return NotFound();
+            await appService.DeleteAsync(id);
+            return NoContent();
         }
-
-        _logger.LogInformation("Entity with id {Id} deleted successfully", id);
-        return NoContent();
+        catch (KeyNotFoundException ex)
+        {
+            logger.LogWarning("KeyNotFoundException in {method}: {message}", nameof(Delete), ex.Message);
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Exception in {method}: {@exception}", nameof(Delete), ex);
+            return StatusCode(500, ex.Message);
+        }
     }
 }

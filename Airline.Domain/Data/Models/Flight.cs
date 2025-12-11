@@ -49,4 +49,9 @@ public class Flight
     /// Модель самолёта, выполняющего рейс.
     /// </summary>
     public required AircraftModel Model { get; set; }
+
+    /// <summary>
+    /// Коллекция билетов, оформленных на этот рейс.
+    /// </summary>
+    public ICollection<Ticket> Tickets { get; set; } = [];
 }

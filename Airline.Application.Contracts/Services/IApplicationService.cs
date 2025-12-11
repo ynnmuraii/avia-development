@@ -3,33 +3,32 @@ namespace Airline.Application.Contracts.Services;
 /// <summary>
 /// Базовый интерфейс для всех сервисов приложения с методами CRUD.
 /// </summary>
-public interface IApplicationService<TDto, TCreateUpdateDto, TKey>
+public interface IApplicationService<TDto, TCreateUpdateDto>
     where TDto : class
     where TCreateUpdateDto : class
-    where TKey : struct
 {
     /// <summary>
     /// Получить все сущности.
     /// </summary>
-    public Task<IEnumerable<TDto>> GetAllAsync();
+    Task<IEnumerable<TDto>> GetAllAsync();
 
     /// <summary>
     /// Получить сущность по идентификатору.
     /// </summary>
-    public Task<TDto?> GetByIdAsync(TKey id);
+    Task<TDto?> GetByIdAsync(int id);
 
     /// <summary>
     /// Создать новую сущность.
     /// </summary>
-    public Task<TDto> CreateAsync(TCreateUpdateDto createDto);
+    Task<TDto> CreateAsync(TCreateUpdateDto createDto);
 
     /// <summary>
     /// Обновить существующую сущность.
     /// </summary>
-    public Task<TDto?> UpdateAsync(TKey id, TCreateUpdateDto updateDto);
+    Task UpdateAsync(int id, TCreateUpdateDto updateDto);
 
     /// <summary>
     /// Удалить сущность по идентификатору.
     /// </summary>
-    public Task<bool> DeleteAsync(TKey id);
+    Task DeleteAsync(int id);
 }

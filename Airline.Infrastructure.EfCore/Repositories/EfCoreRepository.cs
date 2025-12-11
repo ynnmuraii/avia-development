@@ -13,7 +13,7 @@ public class EfCoreRepository<T>(AirlineDbContext context) : IRepository<T> wher
     /// <summary>
     /// Получить все сущности типа T из базы данных.
     /// </summary>
-    public async Task<IEnumerable<T>> ReadAsync()
+    public virtual async Task<IEnumerable<T>> ReadAsync()
     {
         return await Context.Set<T>().ToListAsync();
     }
@@ -21,7 +21,7 @@ public class EfCoreRepository<T>(AirlineDbContext context) : IRepository<T> wher
     /// <summary>
     /// Получить сущность по её ID.
     /// </summary>
-    public async Task<T?> ReadByIdAsync(int id)
+    public virtual async Task<T?> ReadByIdAsync(int id)
     {
         return await Context.Set<T>().FindAsync(id);
     }

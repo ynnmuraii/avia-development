@@ -55,19 +55,18 @@ public class AircraftFamilyService : IAircraftFamilyService
     /// <summary>
     /// Обновить данные семейства.
     /// </summary>
-    public async Task<AircraftFamilyDto?> UpdateAsync(int id, AircraftFamilyCreateUpdateDto updateDto)
+    public async Task UpdateAsync(int id, AircraftFamilyCreateUpdateDto updateDto)
     {
         var family = _mapper.Map<AircraftFamily>(updateDto);
-        family.Id = 0;
-        var updated = await _repository.UpdateAsync(id, family);
-        return updated is not null ? _mapper.Map<AircraftFamilyDto>(updated) : null;
+        family.Id = id;
+        await _repository.UpdateAsync(id, family);
     }
 
     /// <summary>
     /// Удалить семейство.
     /// </summary>
-    public async Task<bool> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        return await _repository.DeleteAsync(id);
+        await _repository.DeleteAsync(id);
     }
 }

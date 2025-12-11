@@ -79,7 +79,7 @@ public class TicketService : ITicketService
     /// <summary>
     /// Обновить данные билета.
     /// </summary>
-    public async Task<TicketDto?> UpdateAsync(int id, TicketCreateUpdateDto updateDto)
+    public async Task UpdateAsync(int id, TicketCreateUpdateDto updateDto)
     {
         var flight = await _flightRepository.ReadByIdAsync(updateDto.FlightId);
         var passenger = await _passengerRepository.ReadByIdAsync(updateDto.PassengerId);
@@ -91,7 +91,7 @@ public class TicketService : ITicketService
 
         var ticket = new Ticket
         {
-            Id = 0,
+            Id = id,
             Flight = flight,
             Passenger = passenger,
             SeatId = updateDto.SeatId,
@@ -99,15 +99,14 @@ public class TicketService : ITicketService
             BaggageKg = updateDto.BaggageKg
         };
 
-        var updated = await _ticketRepository.UpdateAsync(id, ticket);
-        return updated is not null ? _mapper.Map<TicketDto>(updated) : null;
+        await _ticketRepository.UpdateAsync(id, ticket);
     }
 
     /// <summary>
     /// Удалить билет.
     /// </summary>
-    public async Task<bool> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        return await _ticketRepository.DeleteAsync(id);
+        await _ticketRepository.DeleteAsync(id);
     }
 }

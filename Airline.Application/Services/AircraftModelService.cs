@@ -72,7 +72,7 @@ public class AircraftModelService : IAircraftModelService
     /// <summary>
     /// Обновить данные модели.
     /// </summary>
-    public async Task<AircraftModelDto?> UpdateAsync(int id, AircraftModelCreateUpdateDto updateDto)
+    public async Task UpdateAsync(int id, AircraftModelCreateUpdateDto updateDto)
     {
         var family = await _familyRepository.ReadByIdAsync(updateDto.FamilyId);
         if (family is null)
@@ -80,7 +80,7 @@ public class AircraftModelService : IAircraftModelService
 
         var model = new AircraftModel
         {
-            Id = 0,
+            Id = id,
             ModelName = updateDto.ModelName,
             RangeKm = updateDto.RangeKm,
             Seats = updateDto.Seats,
@@ -88,15 +88,14 @@ public class AircraftModelService : IAircraftModelService
             Family = family
         };
 
-        var updated = await _modelRepository.UpdateAsync(id, model);
-        return updated is not null ? _mapper.Map<AircraftModelDto>(updated) : null;
+        await _modelRepository.UpdateAsync(id, model);
     }
 
     /// <summary>
     /// Удалить модель.
     /// </summary>
-    public async Task<bool> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        return await _modelRepository.DeleteAsync(id);
+        await _modelRepository.DeleteAsync(id);
     }
 }
