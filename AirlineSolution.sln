@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airline.Infrastructure.InMe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airline.Domain", "Airline.Domain\Airline.Domain.csproj", "{62CDE388-7592-42CC-8A57-9B2CB32B84EE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airline.AppHost", "Airline.AppHost\Airline.AppHost.csproj", "{166BCF84-FEE0-4512-9D2F-243FB81A4E0E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Airline.ServiceDefaults", "Airline.ServiceDefaults\Airline.ServiceDefaults.csproj", "{F63E20BC-ED20-4E0B-AB4C-51A0A5585BF4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +101,30 @@ Global
 		{62CDE388-7592-42CC-8A57-9B2CB32B84EE}.Release|x64.Build.0 = Release|Any CPU
 		{62CDE388-7592-42CC-8A57-9B2CB32B84EE}.Release|x86.ActiveCfg = Release|Any CPU
 		{62CDE388-7592-42CC-8A57-9B2CB32B84EE}.Release|x86.Build.0 = Release|Any CPU
+		{166BCF84-FEE0-4512-9D2F-243FB81A4E0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{166BCF84-FEE0-4512-9D2F-243FB81A4E0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{166BCF84-FEE0-4512-9D2F-243FB81A4E0E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{166BCF84-FEE0-4512-9D2F-243FB81A4E0E}.Debug|x64.Build.0 = Debug|Any CPU
+		{166BCF84-FEE0-4512-9D2F-243FB81A4E0E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{166BCF84-FEE0-4512-9D2F-243FB81A4E0E}.Debug|x86.Build.0 = Debug|Any CPU
+		{166BCF84-FEE0-4512-9D2F-243FB81A4E0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{166BCF84-FEE0-4512-9D2F-243FB81A4E0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{166BCF84-FEE0-4512-9D2F-243FB81A4E0E}.Release|x64.ActiveCfg = Release|Any CPU
+		{166BCF84-FEE0-4512-9D2F-243FB81A4E0E}.Release|x64.Build.0 = Release|Any CPU
+		{166BCF84-FEE0-4512-9D2F-243FB81A4E0E}.Release|x86.ActiveCfg = Release|Any CPU
+		{166BCF84-FEE0-4512-9D2F-243FB81A4E0E}.Release|x86.Build.0 = Release|Any CPU
+		{F63E20BC-ED20-4E0B-AB4C-51A0A5585BF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F63E20BC-ED20-4E0B-AB4C-51A0A5585BF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F63E20BC-ED20-4E0B-AB4C-51A0A5585BF4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F63E20BC-ED20-4E0B-AB4C-51A0A5585BF4}.Debug|x64.Build.0 = Debug|Any CPU
+		{F63E20BC-ED20-4E0B-AB4C-51A0A5585BF4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F63E20BC-ED20-4E0B-AB4C-51A0A5585BF4}.Debug|x86.Build.0 = Debug|Any CPU
+		{F63E20BC-ED20-4E0B-AB4C-51A0A5585BF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F63E20BC-ED20-4E0B-AB4C-51A0A5585BF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F63E20BC-ED20-4E0B-AB4C-51A0A5585BF4}.Release|x64.ActiveCfg = Release|Any CPU
+		{F63E20BC-ED20-4E0B-AB4C-51A0A5585BF4}.Release|x64.Build.0 = Release|Any CPU
+		{F63E20BC-ED20-4E0B-AB4C-51A0A5585BF4}.Release|x86.ActiveCfg = Release|Any CPU
+		{F63E20BC-ED20-4E0B-AB4C-51A0A5585BF4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
