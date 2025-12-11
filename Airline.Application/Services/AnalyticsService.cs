@@ -52,23 +52,22 @@ public class AnalyticsService : IAnalyticsService
     /// Получить топ-5 рейсов по количеству пассажиров.
     /// </summary>
     public async Task<IEnumerable<FlightWithCountDto>> GetTop5FlightsByPassengerCountAsync()
-    {
-        var tickets = await _ticketRepository.ReadAsync();
-        var topFlights = tickets
-            .GroupBy(t => t.Flight)
-            .Select(g => new { Flight = g.Key, PassengerCount = g.Count() })
-            .OrderByDescending(x => x.PassengerCount)
-            .Take(5)
-            .Select(x => new FlightWithCountDto
-            {
-                FlightId = x.Flight.Id,
-                FlightCode = x.Flight.Code,
-                PassengerCount = x.PassengerCount
-            })
-            .ToList();
+{
+    var flights = await _flightRepository.ReadAsync();
 
-        return topFlights;
-    }
+    var result = flights
+        .Select(f => new FlightWithCountDto
+        {
+            FlightId = f.Id,
+            FlightCode = f.Code,
+            PassengerCount = f.Tickets?.Count ?? 0 
+        })
+        .OrderByDescending(x => x.PassengerCount)
+        .Take(5)
+        .ToList();
+
+    return result;
+}
 
     /// <summary>
     /// Получить пассажиров без багажа для выбранного рейса.

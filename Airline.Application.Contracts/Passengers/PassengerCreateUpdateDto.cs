@@ -3,25 +3,30 @@ namespace Airline.Application.Contracts.Passengers;
 /// <summary>
 /// DTO для создания или обновления информации о пассажире.
 /// </summary>
-public record PassengerCreateUpdateDto(
+public record PassengerCreateUpdateDto
+{
     /// <summary>
     /// Имя пассажира.
     /// </summary>
-    string FirstName,
+    public required string FirstName { get; init; }
+
     /// <summary>
     /// Фамилия пассажира.
     /// </summary>
-    string LastName,
+    public required string LastName { get; init; }
+
     /// <summary>
     /// Отчество пассажира.
     /// </summary>
-    string? Patronymic,
+    public string? Patronymic { get; init; }
+
     /// <summary>
     /// Номер паспорта пассажира.
     /// </summary>
-    string PassportNumber,
+    public required string PassportNumber { get; init; }
+
     /// <summary>
     /// Дата рождения пассажира.
     /// </summary>
-    DateOnly? BirthDate
-);
+    public DateOnly? BirthDate { get; init; }
+}

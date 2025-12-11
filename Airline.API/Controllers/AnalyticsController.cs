@@ -8,19 +8,12 @@ namespace Airline.API.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-public class AnalyticsController : ControllerBase
+public class AnalyticsController(IAnalyticsService analyticsService) : ControllerBase
 {
-    private readonly IAnalyticsService _analyticsService;
-    private readonly ILogger<AnalyticsController> _logger;
-
     /// <summary>
     /// Инициализирует контроллер аналитики.
     /// </summary>
-    public AnalyticsController(IAnalyticsService analyticsService, ILogger<AnalyticsController> logger)
-    {
-        _analyticsService = analyticsService;
-        _logger = logger;
-    }
+
 
     /// <summary>
     /// Получить рейсы с минимальной длительностью.
@@ -29,7 +22,7 @@ public class AnalyticsController : ControllerBase
     [HttpGet("flights-with-minimal-duration")]
     public async Task<ActionResult<IEnumerable<dynamic>>> GetFlightsWithMinimalDuration()
     {
-        var flights = await _analyticsService.GetFlightsWithMinimalDurationAsync();
+        var flights = await analyticsService.GetFlightsWithMinimalDurationAsync();
         return Ok(flights);
     }
 
@@ -40,7 +33,7 @@ public class AnalyticsController : ControllerBase
     [HttpGet("top-5-flights-by-passengers")]
     public async Task<ActionResult<IEnumerable<dynamic>>> GetTop5FlightsByPassengers()
     {
-        var flights = await _analyticsService.GetTop5FlightsByPassengerCountAsync();
+        var flights = await analyticsService.GetTop5FlightsByPassengerCountAsync();
         return Ok(flights);
     }
 
@@ -52,7 +45,7 @@ public class AnalyticsController : ControllerBase
     [HttpGet("passengers-without-baggage/{flightCode}")]
     public async Task<ActionResult<IEnumerable<dynamic>>> GetPassengersWithoutBaggage(string flightCode)
     {
-        var passengers = await _analyticsService.GetPassengersWithoutBaggageAsync(flightCode);
+        var passengers = await analyticsService.GetPassengersWithoutBaggageAsync(flightCode);
         return Ok(passengers);
     }
 
@@ -69,7 +62,7 @@ public class AnalyticsController : ControllerBase
         if (!DateOnly.TryParse(startDate, out var start) || !DateOnly.TryParse(endDate, out var end))
             return BadRequest("Invalid date format. Use yyyy-MM-dd");
 
-        var flights = await _analyticsService.GetFlightsByModelAndDateAsync(modelId, start, end);
+        var flights = await analyticsService.GetFlightsByModelAndDateAsync(modelId, start, end);
         return Ok(flights);
     }
 
@@ -82,7 +75,7 @@ public class AnalyticsController : ControllerBase
     [HttpGet("flights-by-route")]
     public async Task<ActionResult<IEnumerable<dynamic>>> GetFlightsByRoute(string from, string to)
     {
-        var flights = await _analyticsService.GetFlightsByRouteAsync(from, to);
+        var flights = await analyticsService.GetFlightsByRouteAsync(from, to);
         return Ok(flights);
     }
 }

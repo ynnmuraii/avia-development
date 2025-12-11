@@ -17,7 +17,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto>(
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public virtual async Task<ActionResult<IEnumerable<TDto>>> GetAll()
+    public async Task<ActionResult<IEnumerable<TDto>>> GetAll()
     {
         logger.LogInformation("{method} method of {controller} is called", nameof(GetAll), GetType().Name);
         try
@@ -39,7 +39,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto>(
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public virtual async Task<ActionResult<TDto>> Get(int id)
+    public async Task<ActionResult<TDto>> Get(int id)
     {
         logger.LogInformation("{method} method of {controller} is called with id={id}", nameof(Get), GetType().Name, id);
         try
@@ -62,7 +62,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto>(
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public virtual async Task<ActionResult<TDto>> Create([FromBody] TCreateUpdateDto dto)
+    public async Task<ActionResult<TDto>> Create([FromBody] TCreateUpdateDto dto)
     {
         logger.LogInformation("{method} method of {controller} is called", nameof(Create), GetType().Name);
         try
@@ -84,7 +84,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto>(
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public virtual async Task<IActionResult> Update(int id, [FromBody] TCreateUpdateDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] TCreateUpdateDto dto)
     {
         logger.LogInformation("{method} method of {controller} is called with id={id}", nameof(Update), GetType().Name, id);
         try
@@ -111,7 +111,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto>(
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public virtual async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         logger.LogInformation("{method} method of {controller} is called with id={id}", nameof(Delete), GetType().Name, id);
         try

@@ -6,12 +6,7 @@ namespace Airline.API.Controllers;
 /// <summary>
 /// Контроллер для управления моделями самолётов.
 /// </summary>
-public class AircraftModelsController : CrudControllerBase<AircraftModelDto, AircraftModelCreateUpdateDto>
+public class AircraftModelsController(IAircraftModelService service, ILogger<AircraftModelsController> logger) : CrudControllerBase<AircraftModelDto, AircraftModelCreateUpdateDto>(service, logger)
 {
-    /// <summary>
-    /// Инициализирует контроллер моделей.
-    /// </summary>
-    public AircraftModelsController(IAircraftModelService service, ILogger<AircraftModelsController> logger) : base(service, logger)
-    {
-    }
 }
+

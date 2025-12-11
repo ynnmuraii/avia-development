@@ -29,13 +29,12 @@ var connectionString = builder.Configuration.GetConnectionString("airline-db")
 builder.Services.AddDbContext<AirlineDbContext>(options =>
     options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 21))));
 
-// Явная регистрация репозиториев для каждой сущности
 builder.Services.AddScoped<IRepository<AircraftFamily>, EfCoreRepository<AircraftFamily>>();
 builder.Services.AddScoped<IRepository<AircraftModel>, EfCoreRepository<AircraftModel>>();
 builder.Services.AddScoped<IRepository<Flight>, FlightRepository>();
 builder.Services.AddScoped<IRepository<Passenger>, EfCoreRepository<Passenger>>();
 builder.Services.AddScoped<IRepository<Ticket>, TicketRepository>();
-
+builder.AddServiceDefaults();
 builder.Services.AddScoped<IAircraftFamilyService, AircraftFamilyService>();
 builder.Services.AddScoped<IAircraftModelService, AircraftModelService>();
 builder.Services.AddScoped<IFlightService, FlightService>();
@@ -57,7 +56,6 @@ builder.Services.AddSwaggerGen(options =>
     if (File.Exists(xmlPath))
         options.IncludeXmlComments(xmlPath);
 
-    // Подключаем XML всех зависимых проектов (Contracts, Domain и т.д.), которые загружены
     foreach (var refAssembly in assembly.GetReferencedAssemblies())
     {
         if (refAssembly.Name!.StartsWith("System") || refAssembly.Name.StartsWith("Microsoft"))

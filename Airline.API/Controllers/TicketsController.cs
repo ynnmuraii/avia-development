@@ -6,12 +6,7 @@ namespace Airline.API.Controllers;
 /// <summary>
 /// Контроллер для управления билетами.
 /// </summary>
-public class TicketsController : CrudControllerBase<TicketDto, TicketCreateUpdateDto>
+public class TicketsController(ITicketService service, ILogger<TicketsController> logger) : CrudControllerBase<TicketDto, TicketCreateUpdateDto>(service, logger)
 {
-    /// <summary>
-    /// Инициализирует контроллер билетов.
-    /// </summary>
-    public TicketsController(ITicketService service, ILogger<TicketsController> logger) : base(service, logger)
-    {
-    }
 }
+

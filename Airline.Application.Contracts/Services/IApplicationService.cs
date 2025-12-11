@@ -10,25 +10,25 @@ public interface IApplicationService<TDto, TCreateUpdateDto>
     /// <summary>
     /// Получить все сущности.
     /// </summary>
-    Task<IEnumerable<TDto>> GetAllAsync();
+    public Task<IEnumerable<TDto>> GetAllAsync();
 
     /// <summary>
     /// Получить сущность по идентификатору.
     /// </summary>
-    Task<TDto?> GetByIdAsync(int id);
+    public Task<TDto?> GetByIdAsync(int id);
 
     /// <summary>
     /// Создать новую сущность.
     /// </summary>
-    Task<TDto> CreateAsync(TCreateUpdateDto createDto);
+    public Task<TDto> CreateAsync(TCreateUpdateDto createDto);
 
     /// <summary>
     /// Обновить существующую сущность.
     /// </summary>
-    Task UpdateAsync(int id, TCreateUpdateDto updateDto);
+    public Task UpdateAsync(int id, TCreateUpdateDto updateDto);
 
     /// <summary>
     /// Удалить сущность по идентификатору.
     /// </summary>
-    Task DeleteAsync(int id);
+    public Task DeleteAsync(int id);
 }
