@@ -13,10 +13,12 @@
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.AppHost" Version="9.0.0" />
     <PackageReference Include="Aspire.Hosting.MySql" Version="9.0.0" />
+    <PackageReference Include="Aspire.Hosting.RabbitMQ" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Airline.API\Airline.API.csproj" />
+    <ProjectReference Include="..\Airline.Generator\Airline.Generator.csproj" />
   </ItemGroup>
 
 </Project>

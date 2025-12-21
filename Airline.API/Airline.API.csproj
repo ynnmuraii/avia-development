@@ -32,7 +32,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Airline.Infrastructure.EfCore\Airline.Infrastructure.EfCore.csproj" />
+    <ProjectReference Include="..\Airline.Messaging.Contracts\Airline.Messaging.Contracts.csproj" />
     <ProjectReference Include="..\Airline.ServiceDefaults\Airline.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Polly" Version="8.5.0" />
+    <PackageReference Include="RabbitMQ.Client" Version="7.0.0" />
   </ItemGroup>
 
 </Project>

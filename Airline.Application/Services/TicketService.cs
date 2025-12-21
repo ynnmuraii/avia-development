@@ -9,7 +9,7 @@ namespace Airline.Application.Services;
 /// <summary>
 /// Сервис для управления билетами.
 /// </summary>
-public class TicketService : ITicketService
+public class TicketService : IApplicationService<TicketDto, TicketCreateUpdateDto>
 {
     private readonly IRepository<Ticket> _ticketRepository;
     private readonly IRepository<Flight> _flightRepository;

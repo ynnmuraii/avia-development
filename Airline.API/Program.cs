@@ -1,6 +1,10 @@
 using AutoMapper;
 using Airline.Application;
+using Airline.Application.Contracts.AircraftModels;
+using Airline.Application.Contracts.Flights;
+using Airline.Application.Contracts.Passengers;
 using Airline.Application.Contracts.Services;
+using Airline.Application.Contracts.Tickets;
 using Airline.Application.Services;
 using Airline.Domain;
 using Airline.Domain.Repositories;
@@ -36,11 +40,18 @@ builder.Services.AddScoped<IRepository<Passenger>, EfCoreRepository<Passenger>>(
 builder.Services.AddScoped<IRepository<Ticket>, TicketRepository>();
 builder.AddServiceDefaults();
 builder.Services.AddScoped<IAircraftFamilyService, AircraftFamilyService>();
-builder.Services.AddScoped<IAircraftModelService, AircraftModelService>();
-builder.Services.AddScoped<IFlightService, FlightService>();
-builder.Services.AddScoped<IPassengerService, PassengerService>();
-builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<IApplicationService<AircraftModelDto, AircraftModelCreateUpdateDto>, AircraftModelService>();
+builder.Services.AddScoped<IApplicationService<FlightDto, FlightCreateUpdateDto>, FlightService>();
+builder.Services.AddScoped<IApplicationService<PassengerDto, PassengerCreateUpdateDto>, PassengerService>();
+builder.Services.AddScoped<IApplicationService<TicketDto, TicketCreateUpdateDto>, TicketService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+
+// RabbitMQ Consumers
+builder.Services.AddHostedService<Airline.API.Consumers.PassengerConsumer>();
+builder.Services.AddHostedService<Airline.API.Consumers.AircraftFamilyConsumer>();
+builder.Services.AddHostedService<Airline.API.Consumers.AircraftModelConsumer>();
+builder.Services.AddHostedService<Airline.API.Consumers.FlightConsumer>();
+builder.Services.AddHostedService<Airline.API.Consumers.TicketConsumer>();
 
 builder.Services.AddAutoMapper(typeof(AirlineProfile));
 
@@ -88,8 +99,7 @@ using (var scope = app.Services.CreateScope())
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.MapDefaultEndpoints();
 app.MapControllers();
-
-app.MapGet("/", () => "Airline API Приложение");
 
 app.Run();

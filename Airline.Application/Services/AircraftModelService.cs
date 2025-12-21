@@ -9,7 +9,7 @@ namespace Airline.Application.Services;
 /// <summary>
 /// Сервис для управления моделями самолётов.
 /// </summary>
-public class AircraftModelService : IAircraftModelService
+public class AircraftModelService : IApplicationService<AircraftModelDto, AircraftModelCreateUpdateDto>
 {
     private readonly IRepository<AircraftModel> _modelRepository;
     private readonly IRepository<AircraftFamily> _familyRepository;

@@ -9,7 +9,7 @@ namespace Airline.Application.Services;
 /// <summary>
 /// Сервис для управления пассажирами.
 /// </summary>
-public class PassengerService : IPassengerService
+public class PassengerService : IApplicationService<PassengerDto, PassengerCreateUpdateDto>
 {
     private readonly IRepository<Passenger> _repository;
     private readonly IMapper _mapper;

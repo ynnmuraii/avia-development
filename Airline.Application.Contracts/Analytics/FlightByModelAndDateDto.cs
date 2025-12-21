@@ -3,7 +3,7 @@ namespace Airline.Application.Contracts.Analytics;
 /// <summary>
 /// DTO для рейса с моделью и датой.
 /// </summary>
-public class FlightByModelAndDateDto
+public record FlightByModelAndDateDto
 {
     /// <summary>
     /// Идентификатор рейса.
