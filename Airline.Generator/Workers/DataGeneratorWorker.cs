@@ -19,13 +19,12 @@ public class DataGeneratorWorker : BackgroundService
     private readonly FlightGenerator _flightGenerator;
     private readonly TicketGenerator _ticketGenerator;
 
-    // Конфигурация генерации
-    private const int FamiliesToGenerate = 5;
-    private const int ModelsPerFamily = 2;
-    private const int FlightsPerModel = 3;
-    private const int PassengersToGenerate = 50;
-    private const int TicketsPerFlight = 10;
-    private const int GenerationIntervalMs = 30000; // 30 секунд между циклами
+    private const int FamiliesToGenerate = 100;
+    private const int ModelsPerFamily = 5;
+    private const int FlightsPerModel = 5;
+    private const int PassengersToGenerate = 100;
+    private const int TicketsPerFlight = 5;
+    private const int GenerationIntervalMs = 30000; 
 
     public DataGeneratorWorker(
         ILogger<DataGeneratorWorker> logger,
@@ -49,11 +48,10 @@ public class DataGeneratorWorker : BackgroundService
     {
         _logger.LogInformation("DataGeneratorWorker запущен.");
 
-        // Ждём готовности RabbitMQ
         await Task.Delay(5000, stoppingToken);
 
         var cycleCount = 0;
-        const int maxCycles = 3;
+        const int maxCycles = 1;
 
         while (!stoppingToken.IsCancellationRequested && cycleCount < maxCycles)
         {
@@ -76,7 +74,7 @@ public class DataGeneratorWorker : BackgroundService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ошибка при генерации данных.");
-                await Task.Delay(10000, stoppingToken); // Подождать перед повторной попыткой
+                await Task.Delay(10000, stoppingToken);
             }
         }
 
@@ -87,7 +85,6 @@ public class DataGeneratorWorker : BackgroundService
     {
         _logger.LogInformation("Начало генерации данных...");
 
-        // 1. Генерация семейств самолётов
         var families = _aircraftFamilyGenerator.Generate(FamiliesToGenerate).ToList();
         foreach (var family in families)
         {
@@ -95,25 +92,25 @@ public class DataGeneratorWorker : BackgroundService
         }
         _logger.LogInformation("Сгенерировано {Count} семейств самолётов.", families.Count);
 
-        // Небольшая задержка между типами сущностей
         await Task.Delay(1000, cancellationToken);
 
-        // 2. Генерация моделей самолётов
-        var modelId = 1;
-        for (var familyId = 1; familyId <= families.Count; familyId++)
+        var totalModels = 0;
+        const int maxModels = 100;
+        for (var i = 0; i < families.Count && totalModels < maxModels; i++)
         {
+            var familyId = i + 1;
             var models = _aircraftModelGenerator.Generate(ModelsPerFamily, familyId).ToList();
             foreach (var model in models)
             {
+                if (totalModels >= maxModels) break;
                 await _publisher.PublishAsync(QueueNames.AircraftModels, model, cancellationToken);
-                modelId++;
+                totalModels++;
             }
         }
-        _logger.LogInformation("Сгенерировано {Count} моделей самолётов.", families.Count * ModelsPerFamily);
+        _logger.LogInformation("Сгенерировано {Count} моделей самолётов.", totalModels);
 
         await Task.Delay(1000, cancellationToken);
 
-        // 3. Генерация пассажиров
         var passengers = _passengerGenerator.Generate(PassengersToGenerate).ToList();
         foreach (var passenger in passengers)
         {
@@ -123,34 +120,36 @@ public class DataGeneratorWorker : BackgroundService
 
         await Task.Delay(1000, cancellationToken);
 
-        // 4. Генерация рейсов
-        var flightId = 1;
-        var totalModels = families.Count * ModelsPerFamily;
-        for (var mid = 1; mid <= totalModels; mid++)
+        var totalFlights = 0;
+        const int maxFlights = 100;
+        for (var mid = 1; mid <= totalModels && totalFlights < maxFlights; mid++)
         {
             var flights = _flightGenerator.Generate(FlightsPerModel, mid).ToList();
             foreach (var flight in flights)
             {
+                if (totalFlights >= maxFlights) break;
                 await _publisher.PublishAsync(QueueNames.Flights, flight, cancellationToken);
-                flightId++;
+                totalFlights++;
             }
         }
-        _logger.LogInformation("Сгенерировано {Count} рейсов.", totalModels * FlightsPerModel);
+        _logger.LogInformation("Сгенерировано {Count} рейсов.", totalFlights);
 
         await Task.Delay(1000, cancellationToken);
 
-        // 5. Генерация билетов
-        var totalFlights = totalModels * FlightsPerModel;
+        var totalTickets = 0;
+        const int maxTickets = 100;
         var passengerIds = Enumerable.Range(1, passengers.Count).ToList();
-        for (var fid = 1; fid <= totalFlights; fid++)
+        for (var fid = 1; fid <= totalFlights && totalTickets < maxTickets; fid++)
         {
             var tickets = _ticketGenerator.Generate(TicketsPerFlight, fid, passengerIds).ToList();
             foreach (var ticket in tickets)
             {
+                if (totalTickets >= maxTickets) break;
                 await _publisher.PublishAsync(QueueNames.Tickets, ticket, cancellationToken);
+                totalTickets++;
             }
         }
-        _logger.LogInformation("Сгенерировано {Count} билетов.", totalFlights * TicketsPerFlight);
+        _logger.LogInformation("Сгенерировано {Count} билетов.", totalTickets);
 
         _logger.LogInformation("Генерация данных завершена.");
     }

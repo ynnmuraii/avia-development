@@ -39,7 +39,7 @@ public class TicketGenerator
             PassengerId: passengerId,
             SeatId: seatId,
             HasCarryOn: _faker.Random.Bool(0.7f),
-            BaggageKg: _faker.Random.Double(0, 32)
+            BaggageKg: _faker.Random.Bool(0.2f) ? 0 : Math.Round(_faker.Random.Double(0.5, 32), 3)
         );
     }
 

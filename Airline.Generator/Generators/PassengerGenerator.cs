@@ -1,4 +1,5 @@
 using Bogus;
+using Bogus.DataSets;
 using Airline.Messaging.Contracts.Messages;
 
 namespace Airline.Generator.Generators;

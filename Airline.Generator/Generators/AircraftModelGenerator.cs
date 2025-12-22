@@ -21,7 +21,7 @@ public class AircraftModelGenerator
                 RangeKm: f.Random.Int(2000, 15000),
                 Seats: f.Random.Int(100, 500),
                 CargoCapacityKg: f.Random.Int(10000, 50000),
-                FamilyId: 1 // will be set explicitly
+                FamilyId: 1
             ));
     }
 

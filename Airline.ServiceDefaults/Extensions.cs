@@ -23,6 +23,9 @@ namespace Microsoft.Extensions.Hosting
                 http.AddServiceDiscovery();
             });
 
+            builder.Services.AddHealthChecks()
+                .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
+
             return builder;
         }
 

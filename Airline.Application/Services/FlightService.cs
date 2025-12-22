@@ -48,12 +48,12 @@ public class FlightService : IApplicationService<FlightDto, FlightCreateUpdateDt
     /// </summary>
     public async Task<FlightDto> CreateAsync(FlightCreateUpdateDto createDto)
     {
-        // Проверка существования модели самолета
+
         var model = await _modelRepository.ReadByIdAsync(createDto.ModelId);
         if (model is null)
             throw new KeyNotFoundException($"Aircraft model with id {createDto.ModelId} not found");
 
-        // Используем AutoMapper для маппинга DTO в сущность Flight
+
         var flight = _mapper.Map<Flight>(createDto);
         flight.Model = model;
 
@@ -66,21 +66,21 @@ public class FlightService : IApplicationService<FlightDto, FlightCreateUpdateDt
     /// </summary>
     public async Task UpdateAsync(int id, FlightCreateUpdateDto updateDto)
     {
-        // Получаем существующий рейс из БД
+
         var existingFlight = await _repository.ReadByIdAsync(id);
         if (existingFlight is null)
             throw new KeyNotFoundException($"Flight with id {id} not found");
 
-        // Проверка существования модели самолета
+
         var model = await _modelRepository.ReadByIdAsync(updateDto.ModelId);
         if (model is null)
             throw new KeyNotFoundException($"Aircraft model with id {updateDto.ModelId} not found");
 
-        // Маппируем DTO в существующую сущность (обновляем поля)
+
         _mapper.Map(updateDto, existingFlight);
         existingFlight.Model = model;
 
-        // Сохраняем обновленную сущность
+
         await _repository.UpdateAsync(id, existingFlight);
     }
 

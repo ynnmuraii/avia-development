@@ -18,7 +18,7 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// OpenTelemetry для отслеживания
+
 builder.Services.AddOpenTelemetry()
     .WithTracing(t =>
     {
@@ -26,7 +26,7 @@ builder.Services.AddOpenTelemetry()
             .AddAspNetCoreInstrumentation();
     });
 
-// DbContext с MySQL
+
 var connectionString = builder.Configuration.GetConnectionString("airline-db") 
     ?? "Server=localhost;Database=AirlineDb;User=root;Password=password";
 
@@ -46,7 +46,7 @@ builder.Services.AddScoped<IApplicationService<PassengerDto, PassengerCreateUpda
 builder.Services.AddScoped<IApplicationService<TicketDto, TicketCreateUpdateDto>, TicketService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 
-// RabbitMQ Consumers
+
 builder.Services.AddHostedService<Airline.API.Consumers.PassengerConsumer>();
 builder.Services.AddHostedService<Airline.API.Consumers.AircraftFamilyConsumer>();
 builder.Services.AddHostedService<Airline.API.Consumers.AircraftModelConsumer>();
@@ -62,7 +62,7 @@ builder.Services.AddSwaggerGen(options =>
 {
     var assembly = Assembly.GetExecutingAssembly();
     
-    // Подключаем XML самого API
+
     var xmlPath = Path.Combine(AppContext.BaseDirectory, $"{assembly.GetName().Name}.xml");
     if (File.Exists(xmlPath))
         options.IncludeXmlComments(xmlPath);
@@ -80,7 +80,7 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// Инициализация базы данных с миграциями и seed-данными
+
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AirlineDbContext>();

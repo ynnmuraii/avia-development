@@ -116,7 +116,7 @@ public abstract class RabbitMqConsumerBase<TMessage> : BackgroundService where T
             consumer: consumer,
             cancellationToken: stoppingToken);
 
-        // Держим сервис запущенным
+
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(1000, stoppingToken);
