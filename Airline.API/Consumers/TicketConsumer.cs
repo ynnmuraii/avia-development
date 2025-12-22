@@ -3,7 +3,6 @@ using Airline.Application.Contracts.Services;
 using Airline.Application.Contracts.Tickets;
 using Airline.Messaging.Contracts;
 using Airline.Messaging.Contracts.Messages;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Airline.API.Consumers;
 
@@ -20,6 +19,11 @@ public class TicketConsumer : RabbitMqConsumerBase<CreateTicketMessage>
     {
     }
 
+    /// <summary>
+    /// Обрабатывает сообщение о создании билета.
+    /// </summary>
+    /// <param name="message">Сообщение с данными билета.</param>
+    /// <param name="cancellationToken">Токен отмены операции.</param>
     protected override async Task ProcessMessageAsync(CreateTicketMessage message, CancellationToken cancellationToken)
     {
         using var scope = ServiceProvider.CreateScope();

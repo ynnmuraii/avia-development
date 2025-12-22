@@ -46,10 +46,6 @@ builder.Services.AddScoped<IApplicationService<TicketDto, TicketCreateUpdateDto>
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 
 
-builder.Services.AddHostedService<Airline.API.Consumers.PassengerConsumer>();
-builder.Services.AddHostedService<Airline.API.Consumers.AircraftFamilyConsumer>();
-builder.Services.AddHostedService<Airline.API.Consumers.AircraftModelConsumer>();
-builder.Services.AddHostedService<Airline.API.Consumers.FlightConsumer>();
 builder.Services.AddHostedService<Airline.API.Consumers.TicketConsumer>();
 
 builder.Services.AddAutoMapper(typeof(AirlineProfile));
