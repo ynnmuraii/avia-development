@@ -1,7 +1,5 @@
 using System.Text;
 using System.Text.Json;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
 using RabbitMQ.Client;

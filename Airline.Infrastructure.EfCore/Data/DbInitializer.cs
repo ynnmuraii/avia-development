@@ -42,7 +42,7 @@ public static class DbInitializer
     /// <summary>
     /// Получить начальные семейства воздушных судов.
     /// </summary>
-    private static List<AircraftFamily> GetAircraftFamilies() => new()
+    public static List<AircraftFamily> GetAircraftFamilies() => new()
     {
         new()
         {
@@ -109,7 +109,7 @@ public static class DbInitializer
     /// <summary>
     /// Получить начальные модели воздушных судов.
     /// </summary>
-    private static List<AircraftModel> GetAircraftModels(List<AircraftFamily> families) => new()
+    public static List<AircraftModel> GetAircraftModels(List<AircraftFamily> families) => new()
     {
         new()
         {
@@ -206,7 +206,7 @@ public static class DbInitializer
     /// <summary>
     /// Получить начальные полеты.
     /// </summary>
-    private static List<Flight> GetFlights(List<AircraftModel> models) => new()
+    public static List<Flight> GetFlights(List<AircraftModel> models) => new()
     {
         new()
         {
@@ -333,7 +333,7 @@ public static class DbInitializer
     /// <summary>
     /// Получить начальных пассажиров.
     /// </summary>
-    private static List<Passenger> GetPassengers() => new()
+    public static List<Passenger> GetPassengers() => new()
     {
         new()
         {
@@ -430,7 +430,7 @@ public static class DbInitializer
     /// <summary>
     /// Получить начальные билеты.
     /// </summary>
-    private static List<Ticket> GetTickets(List<Flight> flights, List<Passenger> passengers) => new()
+    public static List<Ticket> GetTickets(List<Flight> flights, List<Passenger> passengers) => new()
     {
         new()
         {

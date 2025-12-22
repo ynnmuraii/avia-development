@@ -32,7 +32,15 @@ public class TicketConsumer : RabbitMqConsumerBase<CreateTicketMessage>
             message.HasCarryOn,
             message.BaggageKg);
 
-        await ticketService.CreateAsync(dto);
-        Logger.LogInformation("Билет создан: рейс {FlightId}, пассажир {PassengerId}", message.FlightId, message.PassengerId);
+        try
+        {
+            await ticketService.CreateAsync(dto);
+            Logger.LogInformation("Билет создан: рейс {FlightId}, пассажир {PassengerId}", message.FlightId, message.PassengerId);
+        }
+        catch (InvalidOperationException ex)
+        {
+            Logger.LogWarning("Не удалось создать билет: {Message}. Рейс {FlightId}, пассажир {PassengerId}", 
+                ex.Message, message.FlightId, message.PassengerId);
+        }
     }
 }

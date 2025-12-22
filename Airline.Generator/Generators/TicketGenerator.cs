@@ -9,7 +9,7 @@ namespace Airline.Generator.Generators;
 public class TicketGenerator
 {
     private readonly Faker _faker;
-    private static readonly string[] SeatLetters = ["A", "B", "C", "D", "E", "F"];
+    private static readonly string[] _seatLetters = ["A", "B", "C", "D", "E", "F"];
 
     public TicketGenerator()
     {
@@ -31,7 +31,7 @@ public class TicketGenerator
     public CreateTicketMessage GenerateWithIds(int flightId, int passengerId)
     {
         var row = _faker.Random.Int(1, 45);
-        var seat = _faker.PickRandom(SeatLetters);
+        var seat = _faker.PickRandom(_seatLetters);
         var seatId = $"{row}{seat}";
 
         return new CreateTicketMessage(
@@ -48,6 +48,6 @@ public class TicketGenerator
     /// </summary>
     public CreateTicketMessage Generate()
     {
-        return GenerateWithIds(_faker.Random.Int(1, 10), _faker.Random.Int(1, 100));
+        return GenerateWithIds(_faker.Random.Int(1, 10), _faker.Random.Int(1, 15)); // от 1 до 15 для проверки валидации на несуществующие
     }
 }

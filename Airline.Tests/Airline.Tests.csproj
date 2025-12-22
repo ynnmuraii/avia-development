@@ -21,13 +21,14 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Airline.Domain\Airline.Domain.csproj" />
     <ProjectReference Include="..\Airline.Application.Contracts\Airline.Application.Contracts.csproj" />
     <ProjectReference Include="..\Airline.Application\Airline.Application.csproj" />
-    <ProjectReference Include="..\Airline.Infrastructure.InMemory\Airline.Infrastructure.InMemory.csproj" />
+    <ProjectReference Include="..\Airline.Infrastructure.EfCore\Airline.Infrastructure.EfCore.csproj" />
   </ItemGroup>
 
 </Project>

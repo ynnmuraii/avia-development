@@ -13,7 +13,6 @@ using Airline.Infrastructure.EfCore.Data;
 using Airline.Infrastructure.EfCore.Repositories;
 using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Trace;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
