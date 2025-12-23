@@ -36,6 +36,7 @@ builder.Services.AddScoped<IApplicationService<AircraftModelDto, AircraftModelCr
 builder.Services.AddScoped<IApplicationService<FlightDto, FlightCreateUpdateDto>, FlightService>();
 builder.Services.AddScoped<IApplicationService<PassengerDto, PassengerCreateUpdateDto>, PassengerService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<IApplicationService<TicketDto, TicketCreateUpdateDto>, TicketService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 
 
