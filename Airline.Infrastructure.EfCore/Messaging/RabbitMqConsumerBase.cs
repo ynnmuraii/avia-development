@@ -13,53 +13,41 @@ namespace Airline.Infrastructure.EfCore.Messaging;
 /// <summary>
 /// Базовый класс для консьюмеров RabbitMQ с политикой повторных попыток.
 /// </summary>
-public abstract class RabbitMqConsumerBase<TMessage> : BackgroundService where TMessage : class
+public abstract class RabbitMqConsumerBase<TMessage>(
+    ILogger logger,
+    IServiceProvider serviceProvider,
+    IConnection connection,
+    string queueName) : BackgroundService where TMessage : class
 {
-    protected readonly ILogger Logger;
-    protected readonly IServiceProvider ServiceProvider;
-    private readonly IConnection _connection;
-    private readonly string _queueName;
+    protected readonly ILogger Logger = logger;
+    protected readonly IServiceProvider ServiceProvider = serviceProvider;
     private IModel? _channel;
-    private readonly AsyncRetryPolicy _retryPolicy;
-
-    protected RabbitMqConsumerBase(
-        ILogger logger,
-        IServiceProvider serviceProvider,
-        IConnection connection,
-        string queueName)
-    {
-        Logger = logger;
-        ServiceProvider = serviceProvider;
-        _connection = connection;
-        _queueName = queueName;
-
-        _retryPolicy = Policy
-            .Handle<Exception>()
-            .WaitAndRetryAsync(
-                retryCount: 10,
-                sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Min(Math.Pow(2, retryAttempt), 60)),
-                onRetry: (exception, timeSpan, retryCount, context) =>
-                {
-                    Logger.LogWarning(
-                        exception,
-                        "Ошибка подключения к RabbitMQ. Попытка {RetryCount} через {TimeSpan}.",
-                        retryCount,
-                        timeSpan);
-                });
-    }
+    private readonly AsyncRetryPolicy _retryPolicy = Policy
+        .Handle<Exception>()
+        .WaitAndRetryAsync(
+            retryCount: 10,
+            sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Min(Math.Pow(2, retryAttempt), 60)),
+            onRetry: (exception, timeSpan, retryCount, context) =>
+            {
+                logger.LogWarning(
+                    exception,
+                    "Ошибка подключения к RabbitMQ. Попытка {RetryCount} через {TimeSpan}.",
+                    retryCount,
+                    timeSpan);
+            });
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Logger.LogInformation("Консьюмер {QueueName} запускается...", _queueName);
+        Logger.LogInformation("Консьюмер {QueueName} запускается...", queueName);
 
         try
         {
             await _retryPolicy.ExecuteAsync(() =>
             {
-                _channel = _connection.CreateModel();
+                _channel = connection.CreateModel();
 
                 _channel.QueueDeclare(
-                    queue: _queueName,
+                    queue: queueName,
                     durable: true,
                     exclusive: false,
                     autoDelete: false,
@@ -67,13 +55,13 @@ public abstract class RabbitMqConsumerBase<TMessage> : BackgroundService where T
 
                 _channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
 
-                Logger.LogInformation("Консьюмер подключён к очереди {QueueName}.", _queueName);
+                Logger.LogInformation("Консьюмер подключён к очереди {QueueName}.", queueName);
                 return Task.CompletedTask;
             });
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Критическая ошибка при запуске консьюмера {QueueName}.", _queueName);
+            Logger.LogError(ex, "Критическая ошибка при запуске консьюмера {QueueName}.", queueName);
             return;
         }
 
@@ -96,23 +84,23 @@ public abstract class RabbitMqConsumerBase<TMessage> : BackgroundService where T
                 {
                     await ProcessMessageAsync(message, stoppingToken);
                     _channel.BasicAck(ea.DeliveryTag, multiple: false);
-                    Logger.LogDebug("Сообщение обработано в очереди {QueueName}.", _queueName);
+                    Logger.LogDebug("Сообщение обработано в очереди {QueueName}.", queueName);
                 }
                 else
                 {
-                    Logger.LogWarning("Получено пустое сообщение в очереди {QueueName}.", _queueName);
+                    Logger.LogWarning("Получено пустое сообщение в очереди {QueueName}.", queueName);
                     _channel.BasicNack(ea.DeliveryTag, multiple: false, requeue: false);
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Ошибка обработки сообщения в очереди {QueueName}.", _queueName);
+                Logger.LogError(ex, "Ошибка обработки сообщения в очереди {QueueName}.", queueName);
                 _channel.BasicNack(ea.DeliveryTag, multiple: false, requeue: true);
             }
         };
 
         _channel.BasicConsume(
-            queue: _queueName,
+            queue: queueName,
             autoAck: false,
             consumer: consumer);
 
@@ -129,7 +117,7 @@ public abstract class RabbitMqConsumerBase<TMessage> : BackgroundService where T
 
     public override Task StopAsync(CancellationToken cancellationToken)
     {
-        Logger.LogInformation("Консьюмер {QueueName} останавливается...", _queueName);
+        Logger.LogInformation("Консьюмер {QueueName} останавливается...", queueName);
 
         if (_channel != null)
         {

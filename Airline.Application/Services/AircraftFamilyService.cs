@@ -9,27 +9,17 @@ namespace Airline.Application.Services;
 /// <summary>
 /// Сервис для управления семействами самолётов.
 /// </summary>
-public class AircraftFamilyService : IAircraftFamilyService
+public class AircraftFamilyService(
+    IRepository<AircraftFamily> repository,
+    IMapper mapper) : IAircraftFamilyService
 {
-    private readonly IRepository<AircraftFamily> _repository;
-    private readonly IMapper _mapper;
-
-    /// <summary>
-    /// Инициализирует сервис семейств.
-    /// </summary>
-    public AircraftFamilyService(IRepository<AircraftFamily> repository, IMapper mapper)
-    {
-        _repository = repository;
-        _mapper = mapper;
-    }
-
     /// <summary>
     /// Получить все семейства.
     /// </summary>
     public async Task<IEnumerable<AircraftFamilyDto>> GetAllAsync()
     {
-        var families = await _repository.ReadAsync();
-        return _mapper.Map<IEnumerable<AircraftFamilyDto>>(families);
+        var families = await repository.ReadAsync();
+        return mapper.Map<IEnumerable<AircraftFamilyDto>>(families);
     }
 
     /// <summary>
@@ -37,8 +27,8 @@ public class AircraftFamilyService : IAircraftFamilyService
     /// </summary>
     public async Task<AircraftFamilyDto?> GetByIdAsync(int id)
     {
-        var family = await _repository.ReadByIdAsync(id);
-        return family is not null ? _mapper.Map<AircraftFamilyDto>(family) : null;
+        var family = await repository.ReadByIdAsync(id);
+        return family is not null ? mapper.Map<AircraftFamilyDto>(family) : null;
     }
 
     /// <summary>
@@ -46,10 +36,10 @@ public class AircraftFamilyService : IAircraftFamilyService
     /// </summary>
     public async Task<AircraftFamilyDto> CreateAsync(AircraftFamilyCreateUpdateDto createDto)
     {
-        var family = _mapper.Map<AircraftFamily>(createDto);
+        var family = mapper.Map<AircraftFamily>(createDto);
         family.Id = 0;
-        var created = await _repository.CreateAsync(family);
-        return _mapper.Map<AircraftFamilyDto>(created);
+        var created = await repository.CreateAsync(family);
+        return mapper.Map<AircraftFamilyDto>(created);
     }
 
     /// <summary>
@@ -57,9 +47,9 @@ public class AircraftFamilyService : IAircraftFamilyService
     /// </summary>
     public async Task UpdateAsync(int id, AircraftFamilyCreateUpdateDto updateDto)
     {
-        var family = _mapper.Map<AircraftFamily>(updateDto);
+        var family = mapper.Map<AircraftFamily>(updateDto);
         family.Id = id;
-        await _repository.UpdateAsync(id, family);
+        await repository.UpdateAsync(id, family);
     }
 
     /// <summary>
@@ -67,6 +57,6 @@ public class AircraftFamilyService : IAircraftFamilyService
     /// </summary>
     public async Task DeleteAsync(int id)
     {
-        await _repository.DeleteAsync(id);
+        await repository.DeleteAsync(id);
     }
 }

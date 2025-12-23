@@ -9,32 +9,18 @@ namespace Airline.Application.Services;
 /// <summary>
 /// Сервис для управления моделями самолётов.
 /// </summary>
-public class AircraftModelService : IApplicationService<AircraftModelDto, AircraftModelCreateUpdateDto>
+public class AircraftModelService(
+    IRepository<AircraftModel> modelRepository,
+    IRepository<AircraftFamily> familyRepository,
+    IMapper mapper) : IApplicationService<AircraftModelDto, AircraftModelCreateUpdateDto>
 {
-    private readonly IRepository<AircraftModel> _modelRepository;
-    private readonly IRepository<AircraftFamily> _familyRepository;
-    private readonly IMapper _mapper;
-
-    /// <summary>
-    /// Инициализирует сервис моделей.
-    /// </summary>
-    public AircraftModelService(
-        IRepository<AircraftModel> modelRepository,
-        IRepository<AircraftFamily> familyRepository,
-        IMapper mapper)
-    {
-        _modelRepository = modelRepository;
-        _familyRepository = familyRepository;
-        _mapper = mapper;
-    }
-
     /// <summary>
     /// Получить все модели.
     /// </summary>
     public async Task<IEnumerable<AircraftModelDto>> GetAllAsync()
     {
-        var models = await _modelRepository.ReadAsync();
-        return _mapper.Map<IEnumerable<AircraftModelDto>>(models);
+        var models = await modelRepository.ReadAsync();
+        return mapper.Map<IEnumerable<AircraftModelDto>>(models);
     }
 
     /// <summary>
@@ -42,8 +28,8 @@ public class AircraftModelService : IApplicationService<AircraftModelDto, Aircra
     /// </summary>
     public async Task<AircraftModelDto?> GetByIdAsync(int id)
     {
-        var model = await _modelRepository.ReadByIdAsync(id);
-        return model is not null ? _mapper.Map<AircraftModelDto>(model) : null;
+        var model = await modelRepository.ReadByIdAsync(id);
+        return model is not null ? mapper.Map<AircraftModelDto>(model) : null;
     }
 
     /// <summary>
@@ -51,7 +37,7 @@ public class AircraftModelService : IApplicationService<AircraftModelDto, Aircra
     /// </summary>
     public async Task<AircraftModelDto> CreateAsync(AircraftModelCreateUpdateDto createDto)
     {
-        var family = await _familyRepository.ReadByIdAsync(createDto.FamilyId);
+        var family = await familyRepository.ReadByIdAsync(createDto.FamilyId);
         if (family is null)
             throw new InvalidOperationException($"Aircraft family with id {createDto.FamilyId} not found");
 
@@ -65,8 +51,8 @@ public class AircraftModelService : IApplicationService<AircraftModelDto, Aircra
             Family = family
         };
 
-        var created = await _modelRepository.CreateAsync(model);
-        return _mapper.Map<AircraftModelDto>(created);
+        var created = await modelRepository.CreateAsync(model);
+        return mapper.Map<AircraftModelDto>(created);
     }
 
     /// <summary>
@@ -74,7 +60,7 @@ public class AircraftModelService : IApplicationService<AircraftModelDto, Aircra
     /// </summary>
     public async Task UpdateAsync(int id, AircraftModelCreateUpdateDto updateDto)
     {
-        var family = await _familyRepository.ReadByIdAsync(updateDto.FamilyId);
+        var family = await familyRepository.ReadByIdAsync(updateDto.FamilyId);
         if (family is null)
             throw new InvalidOperationException($"Aircraft family with id {updateDto.FamilyId} not found");
 
@@ -88,7 +74,7 @@ public class AircraftModelService : IApplicationService<AircraftModelDto, Aircra
             Family = family
         };
 
-        await _modelRepository.UpdateAsync(id, model);
+        await modelRepository.UpdateAsync(id, model);
     }
 
     /// <summary>
@@ -96,6 +82,6 @@ public class AircraftModelService : IApplicationService<AircraftModelDto, Aircra
     /// </summary>
     public async Task DeleteAsync(int id)
     {
-        await _modelRepository.DeleteAsync(id);
+        await modelRepository.DeleteAsync(id);
     }
 }

@@ -9,27 +9,17 @@ namespace Airline.Application.Services;
 /// <summary>
 /// Сервис для управления пассажирами.
 /// </summary>
-public class PassengerService : IApplicationService<PassengerDto, PassengerCreateUpdateDto>
+public class PassengerService(
+    IRepository<Passenger> repository,
+    IMapper mapper) : IApplicationService<PassengerDto, PassengerCreateUpdateDto>
 {
-    private readonly IRepository<Passenger> _repository;
-    private readonly IMapper _mapper;
-
-    /// <summary>
-    /// Инициализирует сервис пассажиров.
-    /// </summary>
-    public PassengerService(IRepository<Passenger> repository, IMapper mapper)
-    {
-        _repository = repository;
-        _mapper = mapper;
-    }
-
     /// <summary>
     /// Получить всех пассажиров.
     /// </summary>
     public async Task<IEnumerable<PassengerDto>> GetAllAsync()
     {
-        var passengers = await _repository.ReadAsync();
-        return _mapper.Map<IEnumerable<PassengerDto>>(passengers);
+        var passengers = await repository.ReadAsync();
+        return mapper.Map<IEnumerable<PassengerDto>>(passengers);
     }
 
     /// <summary>
@@ -37,8 +27,8 @@ public class PassengerService : IApplicationService<PassengerDto, PassengerCreat
     /// </summary>
     public async Task<PassengerDto?> GetByIdAsync(int id)
     {
-        var passenger = await _repository.ReadByIdAsync(id);
-        return passenger is not null ? _mapper.Map<PassengerDto>(passenger) : null;
+        var passenger = await repository.ReadByIdAsync(id);
+        return passenger is not null ? mapper.Map<PassengerDto>(passenger) : null;
     }
 
     /// <summary>
@@ -46,10 +36,10 @@ public class PassengerService : IApplicationService<PassengerDto, PassengerCreat
     /// </summary>
     public async Task<PassengerDto> CreateAsync(PassengerCreateUpdateDto createDto)
     {
-        var passenger = _mapper.Map<Passenger>(createDto);
+        var passenger = mapper.Map<Passenger>(createDto);
         passenger.Id = 0;
-        var created = await _repository.CreateAsync(passenger);
-        return _mapper.Map<PassengerDto>(created);
+        var created = await repository.CreateAsync(passenger);
+        return mapper.Map<PassengerDto>(created);
     }
 
     /// <summary>
@@ -57,9 +47,9 @@ public class PassengerService : IApplicationService<PassengerDto, PassengerCreat
     /// </summary>
     public async Task UpdateAsync(int id, PassengerCreateUpdateDto updateDto)
     {
-        var passenger = _mapper.Map<Passenger>(updateDto);
+        var passenger = mapper.Map<Passenger>(updateDto);
         passenger.Id = id;
-        await _repository.UpdateAsync(id, passenger);
+        await repository.UpdateAsync(id, passenger);
     }
 
     /// <summary>
@@ -67,6 +57,6 @@ public class PassengerService : IApplicationService<PassengerDto, PassengerCreat
     /// </summary>
     public async Task DeleteAsync(int id)
     {
-        await _repository.DeleteAsync(id);
+        await repository.DeleteAsync(id);
     }
 }

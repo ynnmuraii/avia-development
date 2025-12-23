@@ -9,26 +9,16 @@ namespace Airline.Application.Services;
 /// <summary>
 /// Сервис аналитики для авиакомпании.
 /// </summary>
-public class AnalyticsService : IAnalyticsService
+public class AnalyticsService(
+    IRepository<Flight> flightRepository,
+    IRepository<Ticket> ticketRepository) : IAnalyticsService
 {
-    private readonly IRepository<Flight> _flightRepository;
-    private readonly IRepository<Ticket> _ticketRepository;
-
-    /// <summary>
-    /// Инициализирует сервис аналитики.
-    /// </summary>
-    public AnalyticsService(IRepository<Flight> flightRepository, IRepository<Ticket> ticketRepository)
-    {
-        _flightRepository = flightRepository;
-        _ticketRepository = ticketRepository;
-    }
-
     /// <summary>
     /// Получить рейсы с минимальной длительностью.
     /// </summary>
     public async Task<IEnumerable<FlightWithMinimalDurationDto>> GetFlightsWithMinimalDurationAsync()
     {
-        var flights = await _flightRepository.ReadAsync();
+        var flights = await flightRepository.ReadAsync();
         if (!flights.Any())
             return Enumerable.Empty<FlightWithMinimalDurationDto>();
 
@@ -53,7 +43,7 @@ public class AnalyticsService : IAnalyticsService
     /// </summary>
     public async Task<IEnumerable<FlightWithCountDto>> GetTop5FlightsByPassengerCountAsync()
 {
-    var flights = await _flightRepository.ReadAsync();
+    var flights = await flightRepository.ReadAsync();
 
     var result = flights
         .Select(f => new FlightWithCountDto
@@ -74,8 +64,8 @@ public class AnalyticsService : IAnalyticsService
     /// </summary>
     public async Task<IEnumerable<PassengerDto>> GetPassengersWithoutBaggageAsync(string flightCode)
     {
-        var flights = await _flightRepository.ReadAsync();
-        var tickets = await _ticketRepository.ReadAsync();
+        var flights = await flightRepository.ReadAsync();
+        var tickets = await ticketRepository.ReadAsync();
         
         var flight = flights.FirstOrDefault(f => f.Code == flightCode);
         if (flight is null)
@@ -105,7 +95,7 @@ public class AnalyticsService : IAnalyticsService
     /// </summary>
     public async Task<IEnumerable<FlightByModelAndDateDto>> GetFlightsByModelAndDateAsync(int modelId, DateOnly startDate, DateOnly endDate)
     {
-        var flights = await _flightRepository.ReadAsync();
+        var flights = await flightRepository.ReadAsync();
         
         var flightsByModel = flights
             .Where(f => f.Model.Id == modelId &&
@@ -131,7 +121,7 @@ public class AnalyticsService : IAnalyticsService
     /// </summary>
     public async Task<IEnumerable<FlightByRouteDto>> GetFlightsByRouteAsync(string from, string to)
     {
-        var flights = await _flightRepository.ReadAsync();
+        var flights = await flightRepository.ReadAsync();
         
         var flightsByRoute = flights
             .Where(f => f.From == from && f.To == to)

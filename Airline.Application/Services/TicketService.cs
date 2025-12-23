@@ -9,35 +9,19 @@ namespace Airline.Application.Services;
 /// <summary>
 /// Сервис для управления билетами.
 /// </summary>
-public class TicketService : ITicketService
+public class TicketService(
+    ITicketRepository ticketRepository,
+    IRepository<Flight> flightRepository,
+    IRepository<Passenger> passengerRepository,
+    IMapper mapper) : ITicketService
 {
-    private readonly ITicketRepository _ticketRepository;
-    private readonly IRepository<Flight> _flightRepository;
-    private readonly IRepository<Passenger> _passengerRepository;
-    private readonly IMapper _mapper;
-
-    /// <summary>
-    /// Инициализирует сервис билетов.
-    /// </summary>
-    public TicketService(
-        ITicketRepository ticketRepository,
-        IRepository<Flight> flightRepository,
-        IRepository<Passenger> passengerRepository,
-        IMapper mapper)
-    {
-        _ticketRepository = ticketRepository;
-        _flightRepository = flightRepository;
-        _passengerRepository = passengerRepository;
-        _mapper = mapper;
-    }
-
     /// <summary>
     /// Получить все билеты.
     /// </summary>
     public async Task<IEnumerable<TicketDto>> GetAllAsync()
     {
-        var tickets = await _ticketRepository.ReadAsync();
-        return _mapper.Map<IEnumerable<TicketDto>>(tickets);
+        var tickets = await ticketRepository.ReadAsync();
+        return mapper.Map<IEnumerable<TicketDto>>(tickets);
     }
 
     /// <summary>
@@ -45,8 +29,8 @@ public class TicketService : ITicketService
     /// </summary>
     public async Task<TicketDto?> GetByIdAsync(int id)
     {
-        var ticket = await _ticketRepository.ReadByIdAsync(id);
-        return ticket is not null ? _mapper.Map<TicketDto>(ticket) : null;
+        var ticket = await ticketRepository.ReadByIdAsync(id);
+        return ticket is not null ? mapper.Map<TicketDto>(ticket) : null;
     }
 
     /// <summary>
@@ -56,8 +40,8 @@ public class TicketService : ITicketService
     /// <returns>Список DTO билетов.</returns>
     public async Task<List<TicketDto>> GetTicketsByFlightIdAsync(int flightId)
     {
-        var tickets = await _ticketRepository.GetByFlightIdAsync(flightId);
-        return _mapper.Map<List<TicketDto>>(tickets.ToList());
+        var tickets = await ticketRepository.GetByFlightIdAsync(flightId);
+        return mapper.Map<List<TicketDto>>(tickets.ToList());
     }
 
     /// <summary>
@@ -65,8 +49,8 @@ public class TicketService : ITicketService
     /// </summary>
     public async Task<TicketDto> CreateAsync(TicketCreateUpdateDto createDto)
     {
-        var flight = await _flightRepository.ReadByIdAsync(createDto.FlightId);
-        var passenger = await _passengerRepository.ReadByIdAsync(createDto.PassengerId);
+        var flight = await flightRepository.ReadByIdAsync(createDto.FlightId);
+        var passenger = await passengerRepository.ReadByIdAsync(createDto.PassengerId);
 
         if (flight is null)
             throw new InvalidOperationException($"Flight with id {createDto.FlightId} not found");
@@ -83,8 +67,8 @@ public class TicketService : ITicketService
             BaggageKg = createDto.BaggageKg
         };
 
-        var created = await _ticketRepository.CreateAsync(ticket);
-        return _mapper.Map<TicketDto>(created);
+        var created = await ticketRepository.CreateAsync(ticket);
+        return mapper.Map<TicketDto>(created);
     }
 
     /// <summary>
@@ -92,8 +76,8 @@ public class TicketService : ITicketService
     /// </summary>
     public async Task UpdateAsync(int id, TicketCreateUpdateDto updateDto)
     {
-        var flight = await _flightRepository.ReadByIdAsync(updateDto.FlightId);
-        var passenger = await _passengerRepository.ReadByIdAsync(updateDto.PassengerId);
+        var flight = await flightRepository.ReadByIdAsync(updateDto.FlightId);
+        var passenger = await passengerRepository.ReadByIdAsync(updateDto.PassengerId);
 
         if (flight is null)
             throw new InvalidOperationException($"Flight with id {updateDto.FlightId} not found");
@@ -110,7 +94,7 @@ public class TicketService : ITicketService
             BaggageKg = updateDto.BaggageKg
         };
 
-        await _ticketRepository.UpdateAsync(id, ticket);
+        await ticketRepository.UpdateAsync(id, ticket);
     }
 
     /// <summary>
@@ -118,6 +102,6 @@ public class TicketService : ITicketService
     /// </summary>
     public async Task DeleteAsync(int id)
     {
-        await _ticketRepository.DeleteAsync(id);
+        await ticketRepository.DeleteAsync(id);
     }
 }

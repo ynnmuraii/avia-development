@@ -10,33 +10,25 @@ namespace Airline.Generator.Services;
 /// <summary>
 /// Сервис для публикации сообщений в RabbitMQ с политикой повторных попыток.
 /// </summary>
-public class RabbitMqPublisher : IDisposable
+public class RabbitMqPublisher(
+    ILogger<RabbitMqPublisher> logger,
+    IConnection connection) : IDisposable
 {
-    private readonly ILogger<RabbitMqPublisher> _logger;
-    private readonly IConnection _connection;
     private IModel? _channel;
-    private readonly RetryPolicy _retryPolicy;
     private readonly object _connectionLock = new();
-
-    public RabbitMqPublisher(ILogger<RabbitMqPublisher> logger, IConnection connection)
-    {
-        _logger = logger;
-        _connection = connection;
-
-        _retryPolicy = Policy
-            .Handle<Exception>()
-            .WaitAndRetry(
-                retryCount: 5,
-                sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                onRetry: (exception, timeSpan, retryCount, context) =>
-                {
-                    _logger.LogWarning(
-                        exception,
-                        "Ошибка подключения к RabbitMQ. Попытка {RetryCount} через {TimeSpan}.",
-                        retryCount,
-                        timeSpan);
-                });
-    }
+    private readonly RetryPolicy _retryPolicy = Policy
+        .Handle<Exception>()
+        .WaitAndRetry(
+            retryCount: 5,
+            sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+            onRetry: (exception, timeSpan, retryCount, context) =>
+            {
+                logger.LogWarning(
+                    exception,
+                    "Ошибка подключения к RabbitMQ. Попытка {RetryCount} через {TimeSpan}.",
+                    retryCount,
+                    timeSpan);
+            });
 
     /// <summary>
     /// Подключается к RabbitMQ с повторными попытками.
@@ -50,8 +42,8 @@ public class RabbitMqPublisher : IDisposable
 
             _retryPolicy.Execute(() =>
             {
-                _channel = _connection.CreateModel();
-                _logger.LogInformation("Успешное подключение к RabbitMQ.");
+                _channel = connection.CreateModel();
+                logger.LogInformation("Успешное подключение к RabbitMQ.");
             });
         }
     }
@@ -86,7 +78,7 @@ public class RabbitMqPublisher : IDisposable
             basicProperties: properties,
             body: body);
 
-        _logger.LogDebug("Сообщение опубликовано в очередь {QueueName}.", queueName);
+        logger.LogDebug("Сообщение опубликовано в очередь {QueueName}.", queueName);
         return Task.CompletedTask;
     }
 
