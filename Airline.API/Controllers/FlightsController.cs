@@ -27,7 +27,7 @@ public class FlightsController(
         logger.LogInformation("{method} method called for flight id={id}", nameof(GetFlightTickets), id);
         try
         {
-            var flight = await flightService.GetByIdAsync(id);
+            var flight = await Service.GetByIdAsync(id);
             if (flight == null)
                 return NotFound($"Flight with id={id} not found");
 

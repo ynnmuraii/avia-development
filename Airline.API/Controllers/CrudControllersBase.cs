@@ -19,6 +19,11 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto>(
     where TCreateUpdateDto : class
 {
     /// <summary>
+    /// Защищенное свойство для доступа к сервису из дочерних классов.
+    /// </summary>
+    protected readonly IApplicationService<TDto, TCreateUpdateDto> Service = appService;
+
+    /// <summary>
     /// Получить все записи.
     /// </summary>
     [HttpGet]
@@ -29,7 +34,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto>(
         logger.LogInformation("{method} method of {controller} is called", nameof(GetAll), GetType().Name);
         try
         {
-            var result = await appService.GetAllAsync();
+            var result = await Service.GetAllAsync();
             return Ok(result);
         }
         catch (Exception ex)
@@ -51,7 +56,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto>(
         logger.LogInformation("{method} method of {controller} is called with id={id}", nameof(Get), GetType().Name, id);
         try
         {
-            var result = await appService.GetByIdAsync(id);
+            var result = await Service.GetByIdAsync(id);
             if (result == null) return NotFound($"Entity with id={id} not found");
             return Ok(result);
         }
@@ -74,7 +79,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto>(
         logger.LogInformation("{method} method of {controller} is called", nameof(Create), GetType().Name);
         try
         {
-            var created = await appService.CreateAsync(dto);
+            var created = await Service.CreateAsync(dto);
             return CreatedAtAction(nameof(Get), new { id = 0 }, created);
         }
         catch (Exception ex)
@@ -96,7 +101,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto>(
         logger.LogInformation("{method} method of {controller} is called with id={id}", nameof(Update), GetType().Name, id);
         try
         {
-            await appService.UpdateAsync(id, dto);
+            await Service.UpdateAsync(id, dto);
             return NoContent();
         }
         catch (KeyNotFoundException ex)
@@ -123,7 +128,7 @@ public abstract class CrudControllerBase<TDto, TCreateUpdateDto>(
         logger.LogInformation("{method} method of {controller} is called with id={id}", nameof(Delete), GetType().Name, id);
         try
         {
-            await appService.DeleteAsync(id);
+            await Service.DeleteAsync(id);
             return NoContent();
         }
         catch (KeyNotFoundException ex)
