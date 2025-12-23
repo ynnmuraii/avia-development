@@ -4,6 +4,7 @@ using Airline.Application.Contracts.Tickets;
 using Airline.Application.Contracts.AircraftModels;
 using Airline.Application.Contracts.AircraftFamilies;
 using Airline.Domain;
+using Airline.Messaging.Contracts.Messages;
 using AutoMapper;
 
 namespace Airline.Application;
@@ -92,5 +93,8 @@ public class AirlineProfile : Profile
                 dest => dest.Id,
                 opt => opt.Ignore()
             );
+
+        // Mapping from message to DTO for consumer
+        CreateMap<CreateTicketMessage, TicketCreateUpdateDto>();
     }
 }

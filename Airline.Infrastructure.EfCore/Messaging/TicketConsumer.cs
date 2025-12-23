@@ -2,6 +2,7 @@ using Airline.Application.Contracts.Services;
 using Airline.Application.Contracts.Tickets;
 using Airline.Messaging.Contracts;
 using Airline.Messaging.Contracts.Messages;
+using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
@@ -30,13 +31,9 @@ public class TicketConsumer : RabbitMqConsumerBase<CreateTicketMessage>
     {
         using var scope = ServiceProvider.CreateScope();
         var ticketService = scope.ServiceProvider.GetRequiredService<IApplicationService<TicketDto, TicketCreateUpdateDto>>();
+        var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
 
-        var dto = new TicketCreateUpdateDto(
-            message.FlightId,
-            message.PassengerId,
-            message.SeatId,
-            message.HasCarryOn,
-            message.BaggageKg);
+        var dto = mapper.Map<TicketCreateUpdateDto>(message);
 
         try
         {
