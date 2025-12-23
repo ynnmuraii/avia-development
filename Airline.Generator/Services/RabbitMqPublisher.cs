@@ -108,7 +108,5 @@ public class RabbitMqPublisher : IDisposable
             _channel.Close();
             _channel.Dispose();
         }
-
-        // IConnection управляется Aspire DI, не закрываем его здесь
     }
 }

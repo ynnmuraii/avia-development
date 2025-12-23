@@ -6,7 +6,5 @@ namespace Airline.API.Controllers;
 /// <summary>
 /// Контроллер для управления пассажирами.
 /// </summary>
-public class PassengersController(IApplicationService<PassengerDto, PassengerCreateUpdateDto> service, ILogger<PassengersController> logger) : CrudControllerBase<PassengerDto, PassengerCreateUpdateDto>(service, logger)
-{
-}
+public class PassengersController(IApplicationService<PassengerDto, PassengerCreateUpdateDto> service, ILogger<PassengersController> logger) : CrudControllerBase<PassengerDto, PassengerCreateUpdateDto>(service, logger);
 

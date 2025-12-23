@@ -3,6 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Airline.API.Controllers;
 
+/// <summary>
+/// Базовый контроллер для CRUD-операций.
+/// </summary>
+/// <typeparam name="TDto">Тип DTO для чтения.</typeparam>
+/// <typeparam name="TCreateUpdateDto">Тип DTO для создания/обновления.</typeparam>
+/// <param name="appService">Сервис приложения.</param>
+/// <param name="logger">Логгер.</param>
 [ApiController]
 [Route("api/[controller]")]
 public abstract class CrudControllerBase<TDto, TCreateUpdateDto>(

@@ -12,7 +12,9 @@ public static class DbInitializer
     /// <summary>
     /// Инициализирует базу данных путем применения миграций и заполнения данных, если база пуста.
     /// </summary>
-    public static async Task InitializeAsync(this AirlineDbContext context, ILogger logger = null)
+    /// <param name="context">Контекст базы данных.</param>
+    /// <param name="logger">Логгер (опционально).</param>
+    public static async Task InitializeAsync(this AirlineDbContext context, ILogger? logger = null)
     {
         if (logger != null) logger.LogInformation("Applying migrations...");
         await context.Database.MigrateAsync();

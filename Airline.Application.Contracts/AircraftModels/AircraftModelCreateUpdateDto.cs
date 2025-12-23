@@ -3,25 +3,15 @@ namespace Airline.Application.Contracts.AircraftModels;
 /// <summary>
 /// DTO для создания или обновления информации о модели самолёта.
 /// </summary>
+/// <param name="ModelName">Название модели.</param>
+/// <param name="RangeKm">Дальность полёта в км.</param>
+/// <param name="Seats">Количество мест.</param>
+/// <param name="CargoCapacityKg">Грузоподъёмность в кг.</param>
+/// <param name="FamilyId">Идентификатор семейства самолётов.</param>
 public record AircraftModelCreateUpdateDto(
-    /// <summary>
-    /// Название модели.
-    /// </summary>
     string ModelName,
-    /// <summary>
-    /// Дальность полёта в км.
-    /// </summary>
     int RangeKm,
-    /// <summary>
-    /// Количество мест.
-    /// </summary>
     int Seats,
-    /// <summary>
-    /// Грузоподъёмность в кг.
-    /// </summary>
     int CargoCapacityKg,
-    /// <summary>
-    /// Идентификатор семейства самолётов.
-    /// </summary>
     int FamilyId
 );

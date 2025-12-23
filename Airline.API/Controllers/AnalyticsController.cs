@@ -11,11 +11,6 @@ namespace Airline.API.Controllers;
 public class AnalyticsController(IAnalyticsService analyticsService) : ControllerBase
 {
     /// <summary>
-    /// Инициализирует контроллер аналитики.
-    /// </summary>
-
-
-    /// <summary>
     /// Получить рейсы с минимальной длительностью.
     /// </summary>
     /// <returns>Список рейсов с минимальной длительностью.</returns>
