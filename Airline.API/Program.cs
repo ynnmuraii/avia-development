@@ -29,12 +29,13 @@ builder.Services.AddScoped<IRepository<AircraftFamily>, EfCoreRepository<Aircraf
 builder.Services.AddScoped<IRepository<AircraftModel>, EfCoreRepository<AircraftModel>>();
 builder.Services.AddScoped<IRepository<Flight>, FlightRepository>();
 builder.Services.AddScoped<IRepository<Passenger>, EfCoreRepository<Passenger>>();
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<IRepository<Ticket>, TicketRepository>();
 builder.Services.AddScoped<IAircraftFamilyService, AircraftFamilyService>();
 builder.Services.AddScoped<IApplicationService<AircraftModelDto, AircraftModelCreateUpdateDto>, AircraftModelService>();
 builder.Services.AddScoped<IApplicationService<FlightDto, FlightCreateUpdateDto>, FlightService>();
 builder.Services.AddScoped<IApplicationService<PassengerDto, PassengerCreateUpdateDto>, PassengerService>();
-builder.Services.AddScoped<IApplicationService<TicketDto, TicketCreateUpdateDto>, TicketService>();
+builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 
 
@@ -81,8 +82,6 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         logger.LogError(ex, "An error occurred while initializing the database.");
-        // Do not rethrow to prevent startup crash, but ensure it's visible
-        // throw; 
     }
 }
 

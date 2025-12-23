@@ -9,9 +9,9 @@ namespace Airline.Application.Services;
 /// <summary>
 /// Сервис для управления билетами.
 /// </summary>
-public class TicketService : IApplicationService<TicketDto, TicketCreateUpdateDto>
+public class TicketService : ITicketService
 {
-    private readonly IRepository<Ticket> _ticketRepository;
+    private readonly ITicketRepository _ticketRepository;
     private readonly IRepository<Flight> _flightRepository;
     private readonly IRepository<Passenger> _passengerRepository;
     private readonly IMapper _mapper;
@@ -20,7 +20,7 @@ public class TicketService : IApplicationService<TicketDto, TicketCreateUpdateDt
     /// Инициализирует сервис билетов.
     /// </summary>
     public TicketService(
-        IRepository<Ticket> ticketRepository,
+        ITicketRepository ticketRepository,
         IRepository<Flight> flightRepository,
         IRepository<Passenger> passengerRepository,
         IMapper mapper)
@@ -47,6 +47,17 @@ public class TicketService : IApplicationService<TicketDto, TicketCreateUpdateDt
     {
         var ticket = await _ticketRepository.ReadByIdAsync(id);
         return ticket is not null ? _mapper.Map<TicketDto>(ticket) : null;
+    }
+
+    /// <summary>
+    /// Получить все билеты для указанного рейса.
+    /// </summary>
+    /// <param name="flightId">Идентификатор рейса.</param>
+    /// <returns>Список DTO билетов.</returns>
+    public async Task<List<TicketDto>> GetTicketsByFlightIdAsync(int flightId)
+    {
+        var tickets = await _ticketRepository.GetByFlightIdAsync(flightId);
+        return _mapper.Map<List<TicketDto>>(tickets.ToList());
     }
 
     /// <summary>

@@ -6,10 +6,9 @@ namespace Airline.Infrastructure.EfCore.Repositories;
 
 /// <summary>
 /// Специализированный репозиторий для сущности Ticket с явной загрузкой связанных данных.
-/// Наследуется от EfCoreRepository<Ticket> и переопределяет методы для включения
-/// связанных сущностей Flight и Passenger через .Include().
+/// Наследуется от EfCoreRepository и реализует ITicketRepository.
 /// </summary>
-public class TicketRepository(AirlineDbContext context) : EfCoreRepository<Ticket>(context)
+public class TicketRepository(AirlineDbContext context) : EfCoreRepository<Ticket>(context), ITicketRepository
 {
     /// <summary>
     /// Получить все билеты с предварительно загруженными рейсами и пассажирами.
@@ -34,5 +33,21 @@ public class TicketRepository(AirlineDbContext context) : EfCoreRepository<Ticke
                 .ThenInclude(f => f.Model)
             .Include(t => t.Passenger)
             .FirstOrDefaultAsync(t => t.Id == id);
+    }
+
+    /// <summary>
+    /// Получить все билеты для указанного рейса.
+    /// </summary>
+    /// <param name="flightId">Идентификатор рейса.</param>
+    /// <returns>Список билетов, принадлежащих указанному рейсу.</returns>
+    public async Task<IEnumerable<Ticket>> GetByFlightIdAsync(int flightId)
+    {
+        return await Context.Set<Ticket>()
+            .AsNoTracking()
+            .Where(t => t.Flight.Id == flightId)
+            .Include(t => t.Flight)
+                .ThenInclude(f => f.Model)
+            .Include(t => t.Passenger)
+            .ToListAsync();
     }
 }
