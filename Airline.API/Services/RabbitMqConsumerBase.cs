@@ -14,23 +14,21 @@ public abstract class RabbitMqConsumerBase<TMessage> : BackgroundService where T
 {
     protected readonly ILogger Logger;
     protected readonly IServiceProvider ServiceProvider;
-    private readonly string _connectionString;
+    private readonly IConnection _connection;
     private readonly string _queueName;
-    private IConnection? _connection;
-    private IChannel? _channel;
+    private IModel? _channel;
     private readonly AsyncRetryPolicy _retryPolicy;
 
     protected RabbitMqConsumerBase(
         ILogger logger,
         IServiceProvider serviceProvider,
-        IConfiguration configuration,
+        IConnection connection,
         string queueName)
     {
         Logger = logger;
         ServiceProvider = serviceProvider;
+        _connection = connection;
         _queueName = queueName;
-        _connectionString = configuration.GetConnectionString("messaging") 
-            ?? "amqp://guest:guest@localhost:5672";
 
         _retryPolicy = Policy
             .Handle<Exception>()
@@ -51,28 +49,30 @@ public abstract class RabbitMqConsumerBase<TMessage> : BackgroundService where T
     {
         Logger.LogInformation("Консьюмер {QueueName} запускается...", _queueName);
 
-        await _retryPolicy.ExecuteAsync(async () =>
+        try 
         {
-            var factory = new ConnectionFactory
+            await _retryPolicy.ExecuteAsync(() =>
             {
-                Uri = new Uri(_connectionString)
-            };
+                _channel = _connection.CreateModel();
 
-            _connection = await factory.CreateConnectionAsync(stoppingToken);
-            _channel = await _connection.CreateChannelAsync(cancellationToken: stoppingToken);
+                _channel.QueueDeclare(
+                    queue: _queueName,
+                    durable: true,
+                    exclusive: false,
+                    autoDelete: false,
+                    arguments: null);
 
-            await _channel.QueueDeclareAsync(
-                queue: _queueName,
-                durable: true,
-                exclusive: false,
-                autoDelete: false,
-                arguments: null,
-                cancellationToken: stoppingToken);
+                _channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
 
-            await _channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false, cancellationToken: stoppingToken);
-
-            Logger.LogInformation("Консьюмер подключён к очереди {QueueName}.", _queueName);
-        });
+                Logger.LogInformation("Консьюмер подключён к очереди {QueueName}.", _queueName);
+                return Task.CompletedTask;
+            });
+        }
+        catch (Exception ex)
+        {
+             Logger.LogError(ex, "Критическая ошибка при запуске консьюмера {QueueName}.", _queueName);
+             return;
+        }
 
         if (_channel == null)
         {
@@ -80,8 +80,8 @@ public abstract class RabbitMqConsumerBase<TMessage> : BackgroundService where T
             return;
         }
 
-        var consumer = new AsyncEventingBasicConsumer(_channel);
-        consumer.ReceivedAsync += async (model, ea) =>
+        var consumer = new EventingBasicConsumer(_channel);
+        consumer.Received += async (model, ea) =>
         {
             try
             {
@@ -92,28 +92,26 @@ public abstract class RabbitMqConsumerBase<TMessage> : BackgroundService where T
                 if (message != null)
                 {
                     await ProcessMessageAsync(message, stoppingToken);
-                    await _channel.BasicAckAsync(ea.DeliveryTag, multiple: false, cancellationToken: stoppingToken);
+                    _channel.BasicAck(ea.DeliveryTag, multiple: false);
                     Logger.LogDebug("Сообщение обработано в очереди {QueueName}.", _queueName);
                 }
                 else
                 {
                     Logger.LogWarning("Получено пустое сообщение в очереди {QueueName}.", _queueName);
-                    await _channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false, cancellationToken: stoppingToken);
+                    _channel.BasicNack(ea.DeliveryTag, multiple: false, requeue: false);
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Ошибка обработки сообщения в очереди {QueueName}.", _queueName);
-                await _channel.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: true, cancellationToken: stoppingToken);
+                _channel.BasicNack(ea.DeliveryTag, multiple: false, requeue: true);
             }
         };
 
-        await _channel.BasicConsumeAsync(
+        _channel.BasicConsume(
             queue: _queueName,
             autoAck: false,
-            consumer: consumer,
-            cancellationToken: stoppingToken);
-
+            consumer: consumer);
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -126,22 +124,18 @@ public abstract class RabbitMqConsumerBase<TMessage> : BackgroundService where T
     /// </summary>
     protected abstract Task ProcessMessageAsync(TMessage message, CancellationToken cancellationToken);
 
-    public override async Task StopAsync(CancellationToken cancellationToken)
+    public override Task StopAsync(CancellationToken cancellationToken)
     {
         Logger.LogInformation("Консьюмер {QueueName} останавливается...", _queueName);
 
         if (_channel != null)
         {
-            await _channel.CloseAsync(cancellationToken);
+            _channel.Close();
             _channel.Dispose();
         }
 
-        if (_connection != null)
-        {
-            await _connection.CloseAsync(cancellationToken);
-            _connection.Dispose();
-        }
+        // IConnection управляется Aspire DI, не закрываем его здесь
 
-        await base.StopAsync(cancellationToken);
+        return base.StopAsync(cancellationToken);
     }
 }

@@ -1,5 +1,6 @@
 using Airline.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Airline.Infrastructure.EfCore.Data;
 
@@ -11,12 +12,14 @@ public static class DbInitializer
     /// <summary>
     /// Инициализирует базу данных путем применения миграций и заполнения данных, если база пуста.
     /// </summary>
-    public static async Task InitializeAsync(this AirlineDbContext context)
+    public static async Task InitializeAsync(this AirlineDbContext context, ILogger logger = null)
     {
+        if (logger != null) logger.LogInformation("Applying migrations...");
         await context.Database.MigrateAsync();
 
         if (!await context.AircraftFamilies.AnyAsync())
         {
+            if (logger != null) logger.LogInformation("Database is empty. Seeding initial data...");
             var families = GetAircraftFamilies();
             await context.AircraftFamilies.AddRangeAsync(families);
             await context.SaveChangesAsync();

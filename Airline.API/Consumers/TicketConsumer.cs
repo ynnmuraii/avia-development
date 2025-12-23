@@ -3,6 +3,7 @@ using Airline.Application.Contracts.Services;
 using Airline.Application.Contracts.Tickets;
 using Airline.Messaging.Contracts;
 using Airline.Messaging.Contracts.Messages;
+using RabbitMQ.Client;
 
 namespace Airline.API.Consumers;
 
@@ -14,8 +15,8 @@ public class TicketConsumer : RabbitMqConsumerBase<CreateTicketMessage>
     public TicketConsumer(
         ILogger<TicketConsumer> logger,
         IServiceProvider serviceProvider,
-        IConfiguration configuration)
-        : base(logger, serviceProvider, configuration, QueueNames.Tickets)
+        IConnection connection)
+        : base(logger, serviceProvider, connection, QueueNames.Tickets)
     {
     }
 

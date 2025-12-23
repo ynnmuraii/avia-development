@@ -16,18 +16,20 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("airline-db") 
-    ?? "Server=localhost;Database=AirlineDb;User=root;Password=password";
+builder.AddServiceDefaults();
+
+builder.AddRabbitMQClient("messaging");
+
+var connectionString = builder.Configuration.GetConnectionString("airline-db");
 
 builder.Services.AddDbContext<AirlineDbContext>(options =>
-    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 21))));
+    options.UseMySql(connectionString!, new MySqlServerVersion(new Version(8, 0, 21))));
 
 builder.Services.AddScoped<IRepository<AircraftFamily>, EfCoreRepository<AircraftFamily>>();
 builder.Services.AddScoped<IRepository<AircraftModel>, EfCoreRepository<AircraftModel>>();
 builder.Services.AddScoped<IRepository<Flight>, FlightRepository>();
 builder.Services.AddScoped<IRepository<Passenger>, EfCoreRepository<Passenger>>();
 builder.Services.AddScoped<IRepository<Ticket>, TicketRepository>();
-builder.AddServiceDefaults();
 builder.Services.AddScoped<IAircraftFamilyService, AircraftFamilyService>();
 builder.Services.AddScoped<IApplicationService<AircraftModelDto, AircraftModelCreateUpdateDto>, AircraftModelService>();
 builder.Services.AddScoped<IApplicationService<FlightDto, FlightCreateUpdateDto>, FlightService>();
@@ -68,16 +70,19 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     var dbContext = scope.ServiceProvider.GetRequiredService<AirlineDbContext>();
     try
     {
-        await dbContext.InitializeAsync();
+        logger.LogInformation("Starting database initialization...");
+        await dbContext.InitializeAsync(logger);
+        logger.LogInformation("Database initialization completed successfully.");
     }
     catch (Exception ex)
     {
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "An error occurred while initializing the database.");
-        throw;
+        // Do not rethrow to prevent startup crash, but ensure it's visible
+        // throw; 
     }
 }
 

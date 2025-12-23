@@ -6,6 +6,8 @@ var builder = Host.CreateApplicationBuilder(args);
 
 builder.AddServiceDefaults();
 
+builder.AddRabbitMQClient("messaging");
+
 builder.Services.AddSingleton<TicketGenerator>();
 
 builder.Services.AddSingleton<RabbitMqPublisher>();
