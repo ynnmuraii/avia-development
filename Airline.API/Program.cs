@@ -12,19 +12,9 @@ using Airline.Infrastructure.EfCore;
 using Airline.Infrastructure.EfCore.Data;
 using Airline.Infrastructure.EfCore.Repositories;
 using Microsoft.EntityFrameworkCore;
-using OpenTelemetry.Trace;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
-
-
-builder.Services.AddOpenTelemetry()
-    .WithTracing(t =>
-    {
-        t.AddHttpClientInstrumentation()
-            .AddAspNetCoreInstrumentation();
-    });
-
 
 var connectionString = builder.Configuration.GetConnectionString("airline-db") 
     ?? "Server=localhost;Database=AirlineDb;User=root;Password=password";

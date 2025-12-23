@@ -1,49 +1,32 @@
 ﻿﻿using Xunit;
 using Airline.Application.Services;
 using Airline.Domain;
-using Airline.Infrastructure.EfCore;
-using Airline.Infrastructure.EfCore.Repositories;
-using Airline.Infrastructure.EfCore.Data;
-using Microsoft.EntityFrameworkCore;
+using Airline.Infrastructure.InMemory.Data;
+using Airline.Infrastructure.InMemory.Repositories;
 
 namespace Airline.Tests;
 
-public class AnalyticsServiceTests : IDisposable
+public class AnalyticsServiceTests
 {
     private readonly AnalyticsService _service;
-    private readonly AirlineDbContext _context;
+    private readonly List<Flight> _flights;
+    private readonly List<Ticket> _tickets;
+    private readonly List<Passenger> _passengers;
+    private readonly List<AircraftFamily> _families;
+    private readonly List<AircraftModel> _models;
 
     public AnalyticsServiceTests()
     {
-        var options = new DbContextOptionsBuilder<AirlineDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
+        _families = DataSeeder.GetAircraftFamilies();
+        _models = DataSeeder.GetAircraftModels(_families);
+        _flights = DataSeeder.GetFlights(_models);
+        _passengers = DataSeeder.GetPassengers();
+        _tickets = DataSeeder.GetTickets(_flights, _passengers);
 
-        _context = new AirlineDbContext(options);
-        
-        var families = DbInitializer.GetAircraftFamilies();
-        var models = DbInitializer.GetAircraftModels(families);
-        var flights = DbInitializer.GetFlights(models);
-        var passengers = DbInitializer.GetPassengers();
-        var tickets = DbInitializer.GetTickets(flights, passengers);
+        var flightRepo = new FlightRepository(_flights);
+        var ticketRepo = new TicketRepository(_tickets);
 
-        _context.AircraftFamilies.AddRange(families);
-        _context.AircraftModels.AddRange(models);
-        _context.Flights.AddRange(flights);
-        _context.Passengers.AddRange(passengers);
-        _context.Tickets.AddRange(tickets);
-        _context.SaveChanges();
-
-        var flightRepo = new FlightRepository(_context);
-        var ticketRepo = new TicketRepository(_context);
-
-        
         _service = new AnalyticsService(flightRepo, ticketRepo);
-    }
-
-    public void Dispose()
-    {
-        _context.Dispose();
     }
 
     [Fact]
@@ -74,4 +57,66 @@ public class AnalyticsServiceTests : IDisposable
             Assert.True(list[0].PassengerCount >= list[1].PassengerCount);
         }
     }
+
+    /// <summary>
+    /// Проверяет, что пассажиры без багажа корректно определяются для выбранных рейсов.
+    /// </summary>
+    [Theory]
+    [InlineData("SU100")]
+    [InlineData("SU106")]
+    public void GetPassengersWithoutBaggage_ReturnsPassengers(string flightCode)
+    {
+        var flight = _flights.FirstOrDefault(f => f.Code == flightCode);
+        Assert.NotNull(flight);
+        
+        var passengers = _tickets
+            .Where(t => t.Flight == flight && t.BaggageKg == 0)
+            .Select(t => t.Passenger)
+            .OrderBy(p => p.LastName)
+            .ThenBy(p => p.FirstName)
+            .ToList();
+
+        Assert.NotEmpty(passengers);
+        Assert.True(passengers.SequenceEqual(passengers.OrderBy(p => p.LastName).ThenBy(p => p.FirstName)));
+    }
+
+    /// <summary>
+    /// Проверяет, что полёты выбранной модели за указанный период времени корректно определяются.
+    /// </summary>
+    [Fact]
+    public void GetFlightsByModelAndDate_ReturnsCorrectFlights()
+    {
+        var model = _models.First();
+        var startDate = new DateOnly(2025, 10, 21);
+        var endDate = new DateOnly(2025, 10, 27);
+
+        var flights = _flights
+            .Where(f => f.Model == model &&
+                        f.DateOfDeparture >= startDate &&
+                        f.DateOfDeparture <= endDate)
+            .ToList();
+
+        Assert.NotEmpty(flights);
+        Assert.Contains(flights, f => f.Model == model &&
+                                      f.DateOfDeparture >= startDate &&
+                                      f.DateOfDeparture <= endDate);
+    }
+
+    /// <summary>
+    /// Проверяет, что рейсы из заданного пункта отправления в пункт прибытия корректно определяются.
+    /// </summary>
+    [Fact]
+    public void GetFlightsFromLEDToSVO_ReturnsExpectedFlights()
+    {
+        var from = "LED";
+        var to = "SVO";
+        
+        var flights = _flights
+            .Where(f => f.From == from && f.To == to)
+            .ToList();
+
+        Assert.NotEmpty(flights);
+        Assert.Contains(flights, f => f.From == from && f.To == to);
+    }
 }
+

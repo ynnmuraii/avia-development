@@ -29,6 +29,7 @@
     <ProjectReference Include="..\Airline.Application.Contracts\Airline.Application.Contracts.csproj" />
     <ProjectReference Include="..\Airline.Application\Airline.Application.csproj" />
     <ProjectReference Include="..\Airline.Infrastructure.EfCore\Airline.Infrastructure.EfCore.csproj" />
+    <ProjectReference Include="..\Airline.Infrastructure.InMemory\Airline.Infrastructure.InMemory.csproj" />
   </ItemGroup>
 
 </Project>
