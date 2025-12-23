@@ -2,6 +2,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Airline.Domain\Airline.Domain.csproj" />
+    <ProjectReference Include="..\Airline.Application.Contracts\Airline.Application.Contracts.csproj" />
+    <ProjectReference Include="..\Airline.Messaging.Contracts\Airline.Messaging.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -10,6 +12,9 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.0" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
+    <PackageReference Include="Polly" Version="8.5.0" />
   </ItemGroup>
 
   <PropertyGroup>

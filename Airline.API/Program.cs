@@ -38,7 +38,7 @@ builder.Services.AddScoped<IApplicationService<TicketDto, TicketCreateUpdateDto>
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 
 
-builder.Services.AddHostedService<Airline.API.Consumers.TicketConsumer>();
+builder.Services.AddHostedService<Airline.Infrastructure.EfCore.Messaging.TicketConsumer>();
 
 builder.Services.AddAutoMapper(typeof(AirlineProfile));
 

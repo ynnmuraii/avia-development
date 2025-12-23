@@ -1,11 +1,14 @@
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace Airline.API.Services;
+namespace Airline.Infrastructure.EfCore.Messaging;
 
 /// <summary>
 /// Базовый класс для консьюмеров RabbitMQ с политикой повторных попыток.
@@ -49,7 +52,7 @@ public abstract class RabbitMqConsumerBase<TMessage> : BackgroundService where T
     {
         Logger.LogInformation("Консьюмер {QueueName} запускается...", _queueName);
 
-        try 
+        try
         {
             await _retryPolicy.ExecuteAsync(() =>
             {
@@ -70,8 +73,8 @@ public abstract class RabbitMqConsumerBase<TMessage> : BackgroundService where T
         }
         catch (Exception ex)
         {
-             Logger.LogError(ex, "Критическая ошибка при запуске консьюмера {QueueName}.", _queueName);
-             return;
+            Logger.LogError(ex, "Критическая ошибка при запуске консьюмера {QueueName}.", _queueName);
+            return;
         }
 
         if (_channel == null)

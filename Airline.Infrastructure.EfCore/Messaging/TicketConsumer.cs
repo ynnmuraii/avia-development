@@ -1,11 +1,12 @@
-using Airline.API.Services;
 using Airline.Application.Contracts.Services;
 using Airline.Application.Contracts.Tickets;
 using Airline.Messaging.Contracts;
 using Airline.Messaging.Contracts.Messages;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
-namespace Airline.API.Consumers;
+namespace Airline.Infrastructure.EfCore.Messaging;
 
 /// <summary>
 /// Консьюмер сообщений для создания билетов.
@@ -44,7 +45,7 @@ public class TicketConsumer : RabbitMqConsumerBase<CreateTicketMessage>
         }
         catch (InvalidOperationException ex)
         {
-            Logger.LogWarning("Не удалось создать билет: {Message}. Рейс {FlightId}, пассажир {PassengerId}", 
+            Logger.LogWarning("Не удалось создать билет: {Message}. Рейс {FlightId}, пассажир {PassengerId}",
                 ex.Message, message.FlightId, message.PassengerId);
         }
     }
