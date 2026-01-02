@@ -94,6 +94,7 @@
 
 [Список вариантов](https://docs.google.com/document/d/1Wc8AvsKS_1JptpsxHO-cwfAxz2ghxvQRQ0fy4el2ZOc/edit?usp=sharing)  
 [Список предметных областей](https://docs.google.com/document/d/15jWhXMwd2K8giFMKku_yrY_s2uQNEu4ugJXLYPvYJAE/edit?usp=sharing)  
+[Вопросы к экзамену](https://docs.google.com/document/d/1bjfvtzjyMljJbcu8YCvC8DzDegDUAmDeNtBz9M6FQes/edit?usp=sharing)
 
 ## Схема сдачи
 
